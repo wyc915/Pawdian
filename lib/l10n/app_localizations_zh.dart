@@ -506,4 +506,180 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get languageChineseTraditional => '繁體中文';
+
+  @override
+  String get recordTypeFeeding => '餵食';
+
+  @override
+  String get recordTypeWater => '喝水';
+
+  @override
+  String get recordTypePoop => '便便';
+
+  @override
+  String get recordTypeUrine => '尿尿';
+
+  @override
+  String get recordTypeVomit => '嘔吐';
+
+  @override
+  String get recordTypeCough => '咳嗽';
+
+  @override
+  String get recordTypeLethargy => '精神不佳';
+
+  @override
+  String get recordTypeAppetiteLoss => '食慾不佳';
+
+  @override
+  String get recordTypeVetVisit => '看診';
+
+  @override
+  String get recordTypeNote => '備註';
+
+  @override
+  String get severityNone => '未指定';
+
+  @override
+  String get severityMild => '輕微';
+
+  @override
+  String get severityModerate => '中等';
+
+  @override
+  String get severitySevere => '嚴重';
+
+  @override
+  String get categoryAll => '全部';
+
+  @override
+  String get categoryCare => '照護';
+
+  @override
+  String get categoryMedication => '用藥';
+
+  @override
+  String get categoryDaily => '日常';
+
+  @override
+  String get categorySymptom => '症狀';
+
+  @override
+  String get categoryVet => '看診';
+
+  @override
+  String get categoryWeight => '體重';
+
+  @override
+  String get quickLogTitle => '快速記錄';
+
+  @override
+  String quickLogDone(String type, String pet) {
+    return '已記錄 $pet 的「$type」';
+  }
+
+  @override
+  String get quickLogAddNote => '補充內容';
+
+  @override
+  String get quickLogPickPet => '要記錄哪一隻？';
+
+  @override
+  String get addRecord => '新增紀錄';
+
+  @override
+  String get recordFormNewTitle => '新增紀錄';
+
+  @override
+  String get recordFormEditTitle => '編輯紀錄';
+
+  @override
+  String get fieldDate => '日期';
+
+  @override
+  String get fieldTime => '時間';
+
+  @override
+  String get fieldSeverity => '程度';
+
+  @override
+  String get fieldDiagnosis => '診斷摘要';
+
+  @override
+  String get fieldCost => '花費';
+
+  @override
+  String get fieldNextVisit => '下次回診';
+
+  @override
+  String get revisitReminderTitle => '回診';
+
+  @override
+  String get deleteRecordConfirm => '要刪除這筆紀錄嗎？';
+
+  @override
+  String costLabel(String amount) {
+    return '花費 $amount';
+  }
+
+  @override
+  String get weightTitle => '體重';
+
+  @override
+  String get addWeight => '記錄體重';
+
+  @override
+  String get fieldWeight => '體重';
+
+  @override
+  String get weightInvalid => '請輸入有效的體重';
+
+  @override
+  String get weightEmpty => '尚無體重紀錄';
+
+  @override
+  String weightLatest(String value) {
+    return '最新 $value';
+  }
+
+  @override
+  String weightEntryTitle(String value) {
+    return '體重 $value';
+  }
+
+  @override
+  String get rangeMonth => '1 個月';
+
+  @override
+  String get range3Months => '3 個月';
+
+  @override
+  String get rangeYear => '1 年';
+
+  @override
+  String get rangeAll => '全部';
+
+  @override
+  String get proWeightHistory => '免費版可查看近 3 個月的體重曲線，Pawdian Pro（即將推出）可查看完整歷史。';
+
+  @override
+  String get deleteWeightConfirm => '要刪除這筆體重紀錄嗎？';
+
+  @override
+  String get settingsWeightUnit => '體重單位';
+
+  @override
+  String get settingsQuickLog => '快速記錄按鈕';
+
+  @override
+  String get timelineTitle => '時間軸';
+
+  @override
+  String get viewAll => '查看全部';
+
+  @override
+  String get searchHint => '搜尋備註';
+
+  @override
+  String get timelineEmpty => '沒有符合的紀錄';
 }

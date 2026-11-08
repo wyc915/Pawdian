@@ -943,6 +943,342 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'繁體中文'**
   String get languageChineseTraditional;
+
+  /// No description provided for @recordTypeFeeding.
+  ///
+  /// In en, this message translates to:
+  /// **'Feeding'**
+  String get recordTypeFeeding;
+
+  /// No description provided for @recordTypeWater.
+  ///
+  /// In en, this message translates to:
+  /// **'Water'**
+  String get recordTypeWater;
+
+  /// No description provided for @recordTypePoop.
+  ///
+  /// In en, this message translates to:
+  /// **'Poop'**
+  String get recordTypePoop;
+
+  /// No description provided for @recordTypeUrine.
+  ///
+  /// In en, this message translates to:
+  /// **'Pee'**
+  String get recordTypeUrine;
+
+  /// No description provided for @recordTypeVomit.
+  ///
+  /// In en, this message translates to:
+  /// **'Vomit'**
+  String get recordTypeVomit;
+
+  /// No description provided for @recordTypeCough.
+  ///
+  /// In en, this message translates to:
+  /// **'Cough'**
+  String get recordTypeCough;
+
+  /// No description provided for @recordTypeLethargy.
+  ///
+  /// In en, this message translates to:
+  /// **'Low energy'**
+  String get recordTypeLethargy;
+
+  /// No description provided for @recordTypeAppetiteLoss.
+  ///
+  /// In en, this message translates to:
+  /// **'Poor appetite'**
+  String get recordTypeAppetiteLoss;
+
+  /// No description provided for @recordTypeVetVisit.
+  ///
+  /// In en, this message translates to:
+  /// **'Vet visit'**
+  String get recordTypeVetVisit;
+
+  /// No description provided for @recordTypeNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Note'**
+  String get recordTypeNote;
+
+  /// No description provided for @severityNone.
+  ///
+  /// In en, this message translates to:
+  /// **'Not specified'**
+  String get severityNone;
+
+  /// No description provided for @severityMild.
+  ///
+  /// In en, this message translates to:
+  /// **'Mild'**
+  String get severityMild;
+
+  /// No description provided for @severityModerate.
+  ///
+  /// In en, this message translates to:
+  /// **'Moderate'**
+  String get severityModerate;
+
+  /// No description provided for @severitySevere.
+  ///
+  /// In en, this message translates to:
+  /// **'Severe'**
+  String get severitySevere;
+
+  /// No description provided for @categoryAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get categoryAll;
+
+  /// No description provided for @categoryCare.
+  ///
+  /// In en, this message translates to:
+  /// **'Care'**
+  String get categoryCare;
+
+  /// No description provided for @categoryMedication.
+  ///
+  /// In en, this message translates to:
+  /// **'Medication'**
+  String get categoryMedication;
+
+  /// No description provided for @categoryDaily.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily'**
+  String get categoryDaily;
+
+  /// No description provided for @categorySymptom.
+  ///
+  /// In en, this message translates to:
+  /// **'Symptoms'**
+  String get categorySymptom;
+
+  /// No description provided for @categoryVet.
+  ///
+  /// In en, this message translates to:
+  /// **'Vet'**
+  String get categoryVet;
+
+  /// No description provided for @categoryWeight.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight'**
+  String get categoryWeight;
+
+  /// No description provided for @quickLogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick log'**
+  String get quickLogTitle;
+
+  /// No description provided for @quickLogDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Logged {type} for {pet}'**
+  String quickLogDone(String type, String pet);
+
+  /// No description provided for @quickLogAddNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Add details'**
+  String get quickLogAddNote;
+
+  /// No description provided for @quickLogPickPet.
+  ///
+  /// In en, this message translates to:
+  /// **'Which pet?'**
+  String get quickLogPickPet;
+
+  /// No description provided for @addRecord.
+  ///
+  /// In en, this message translates to:
+  /// **'Add record'**
+  String get addRecord;
+
+  /// No description provided for @recordFormNewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New record'**
+  String get recordFormNewTitle;
+
+  /// No description provided for @recordFormEditTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit record'**
+  String get recordFormEditTitle;
+
+  /// No description provided for @fieldDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get fieldDate;
+
+  /// No description provided for @fieldTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Time'**
+  String get fieldTime;
+
+  /// No description provided for @fieldSeverity.
+  ///
+  /// In en, this message translates to:
+  /// **'Severity'**
+  String get fieldSeverity;
+
+  /// No description provided for @fieldDiagnosis.
+  ///
+  /// In en, this message translates to:
+  /// **'Diagnosis / summary'**
+  String get fieldDiagnosis;
+
+  /// No description provided for @fieldCost.
+  ///
+  /// In en, this message translates to:
+  /// **'Cost'**
+  String get fieldCost;
+
+  /// No description provided for @fieldNextVisit.
+  ///
+  /// In en, this message translates to:
+  /// **'Next visit'**
+  String get fieldNextVisit;
+
+  /// No description provided for @revisitReminderTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Follow-up visit'**
+  String get revisitReminderTitle;
+
+  /// No description provided for @deleteRecordConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this record?'**
+  String get deleteRecordConfirm;
+
+  /// No description provided for @costLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cost {amount}'**
+  String costLabel(String amount);
+
+  /// No description provided for @weightTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight'**
+  String get weightTitle;
+
+  /// No description provided for @addWeight.
+  ///
+  /// In en, this message translates to:
+  /// **'Add weight'**
+  String get addWeight;
+
+  /// No description provided for @fieldWeight.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight'**
+  String get fieldWeight;
+
+  /// No description provided for @weightInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid weight'**
+  String get weightInvalid;
+
+  /// No description provided for @weightEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No weight records yet'**
+  String get weightEmpty;
+
+  /// No description provided for @weightLatest.
+  ///
+  /// In en, this message translates to:
+  /// **'Latest {value}'**
+  String weightLatest(String value);
+
+  /// No description provided for @weightEntryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight {value}'**
+  String weightEntryTitle(String value);
+
+  /// No description provided for @rangeMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'1M'**
+  String get rangeMonth;
+
+  /// No description provided for @range3Months.
+  ///
+  /// In en, this message translates to:
+  /// **'3M'**
+  String get range3Months;
+
+  /// No description provided for @rangeYear.
+  ///
+  /// In en, this message translates to:
+  /// **'1Y'**
+  String get rangeYear;
+
+  /// No description provided for @rangeAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get rangeAll;
+
+  /// No description provided for @proWeightHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'The free version shows the last 3 months. Pawdian Pro (coming soon) unlocks the full history.'**
+  String get proWeightHistory;
+
+  /// No description provided for @deleteWeightConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this weight entry?'**
+  String get deleteWeightConfirm;
+
+  /// No description provided for @settingsWeightUnit.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight unit'**
+  String get settingsWeightUnit;
+
+  /// No description provided for @settingsQuickLog.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick log buttons'**
+  String get settingsQuickLog;
+
+  /// No description provided for @timelineTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Timeline'**
+  String get timelineTitle;
+
+  /// No description provided for @viewAll.
+  ///
+  /// In en, this message translates to:
+  /// **'View all'**
+  String get viewAll;
+
+  /// No description provided for @searchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search notes'**
+  String get searchHint;
+
+  /// No description provided for @timelineEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No matching records'**
+  String get timelineEmpty;
 }
 
 class _AppLocalizationsDelegate

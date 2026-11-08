@@ -9,9 +9,15 @@ import '../../l10n/app_localizations.dart';
 import '../../shared/formatting.dart';
 import '../../shared/l10n_labels.dart';
 import '../../shared/widgets/pet_avatar.dart';
+import '../../core/settings/app_settings.dart';
+import '../../shared/units.dart';
 import '../records/data/record_repository.dart';
+import '../records/quick_log.dart';
+import '../records/widgets/record_tile.dart';
 import '../reminders/data/reminder_repository.dart';
 import '../reminders/widgets/reminder_tile.dart';
+import '../weight/data/weight_repository.dart';
+import '../weight/weight_screen.dart';
 import 'data/pet_repository.dart';
 import 'pets_screen.dart';
 
@@ -106,17 +112,40 @@ class PetDetailScreen extends ConsumerWidget {
                 enabled: !pet.isArchived,
                 onTap: () => context.go(AppRoutes.editReminder(petId, r.id)),
               ),
+          if (!pet.isArchived) ...[
+            const Divider(),
+            QuickLogBar(pets: [pet]),
+          ],
           const Divider(),
-          _SectionTitle(title: l.sectionRecentRecords),
+          _WeightSummary(petId: petId, enabled: !pet.isArchived),
+          const Divider(),
+          _SectionTitle(
+            title: l.sectionRecentRecords,
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextButton(
+                  key: const Key('petDetail.timeline'),
+                  onPressed: () => context.go(AppRoutes.timeline(petId)),
+                  child: Text(l.viewAll),
+                ),
+                if (!pet.isArchived)
+                  IconButton(
+                    key: const Key('petDetail.addRecord'),
+                    tooltip: l.addRecord,
+                    icon: const Icon(Icons.add),
+                    onPressed: () => context.go(AppRoutes.newRecord(petId)),
+                  ),
+              ],
+            ),
+          ),
           if (records.isEmpty)
             _EmptyLine(text: l.noRecords)
           else
             for (final rec in records)
-              ListTile(
-                dense: true,
-                leading: const Icon(Icons.check_circle_outline),
-                title: Text(recordDisplayTitle(l, rec)),
-                subtitle: Text(formatDateTime(context, rec.occurredAt)),
+              RecordTile(
+                record: rec,
+                onTap: () => context.go(AppRoutes.editRecord(petId, rec.id)),
               ),
         ],
       ),
@@ -152,6 +181,68 @@ class PetDetailScreen extends ConsumerWidget {
           if (context.mounted) context.go(AppRoutes.pets);
         }
     }
+  }
+}
+
+/// Latest weight with a small chart; opens the full weight screen.
+class _WeightSummary extends ConsumerWidget {
+  const _WeightSummary({required this.petId, required this.enabled});
+
+  final String petId;
+  final bool enabled;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context);
+    final unit = ref.watch(effectiveWeightUnitProvider);
+    final weights = ref.watch(petWeightsProvider(petId)).value ?? const [];
+    final recent = weights.length > 12
+        ? weights.sublist(weights.length - 12)
+        : weights;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _SectionTitle(
+          title: l.weightTitle,
+          trailing: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextButton(
+                key: const Key('petDetail.weight'),
+                onPressed: () => context.go(AppRoutes.weight(petId)),
+                child: Text(l.viewAll),
+              ),
+              if (enabled)
+                IconButton(
+                  key: const Key('petDetail.addWeight'),
+                  tooltip: l.addWeight,
+                  icon: const Icon(Icons.add),
+                  onPressed: () => showWeightDialog(context, ref, petId: petId),
+                ),
+            ],
+          ),
+        ),
+        if (weights.isEmpty)
+          _EmptyLine(text: l.weightEmpty)
+        else ...[
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Text(
+              l.weightLatest(formatWeight(weights.last.grams, unit)),
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+          ),
+          if (recent.length >= 2)
+            SizedBox(
+              height: 140,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(8, 8, 24, 0),
+                child: WeightChart(entries: recent, unit: unit),
+              ),
+            ),
+        ],
+      ],
+    );
   }
 }
 

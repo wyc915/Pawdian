@@ -6,7 +6,11 @@ import '../../features/home/home_screen.dart';
 import '../../features/pets/pet_detail_screen.dart';
 import '../../features/pets/pet_form_screen.dart';
 import '../../features/pets/pets_screen.dart';
+import '../../features/records/record_form_screen.dart';
+import '../../features/records/timeline_screen.dart';
 import '../../features/reminders/reminder_form_screen.dart';
+import '../../features/weight/weight_screen.dart';
+import '../domain/enums.dart';
 import '../../features/settings/reminder_help_screen.dart';
 import '../../features/settings/settings_screen.dart';
 import '../../features/templates/template_picker_screen.dart';
@@ -26,6 +30,12 @@ abstract final class AppRoutes {
   static String newReminder(String petId) => '/pets/$petId/reminders/new';
   static String editReminder(String petId, String ruleId) =>
       '/pets/$petId/reminders/$ruleId';
+  static String newRecord(String petId, {RecordType? type}) =>
+      '/pets/$petId/records/new${type == null ? '' : '?type=${type.name}'}';
+  static String editRecord(String petId, String recordId) =>
+      '/pets/$petId/records/$recordId';
+  static String timeline(String petId) => '/pets/$petId/timeline';
+  static String weight(String petId) => '/pets/$petId/weight';
 }
 
 final appRouterProvider = Provider<GoRouter>((ref) {
@@ -84,6 +94,36 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                           petId: state.pathParameters['petId']!,
                           ruleId: state.pathParameters['ruleId'],
                         ),
+                      ),
+                      GoRoute(
+                        path: 'records/new',
+                        builder: (context, state) => RecordFormScreen(
+                          petId: state.pathParameters['petId']!,
+                          initialType: RecordType.values
+                              .where(
+                                (t) =>
+                                    t.name == state.uri.queryParameters['type'],
+                              )
+                              .firstOrNull,
+                        ),
+                      ),
+                      GoRoute(
+                        path: 'records/:recordId',
+                        builder: (context, state) => RecordFormScreen(
+                          petId: state.pathParameters['petId']!,
+                          recordId: state.pathParameters['recordId'],
+                        ),
+                      ),
+                      GoRoute(
+                        path: 'timeline',
+                        builder: (context, state) => TimelineScreen(
+                          petId: state.pathParameters['petId']!,
+                        ),
+                      ),
+                      GoRoute(
+                        path: 'weight',
+                        builder: (context, state) =>
+                            WeightScreen(petId: state.pathParameters['petId']!),
                       ),
                     ],
                   ),

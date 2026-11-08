@@ -2145,6 +2145,48 @@ class $CareRecordsTable extends CareRecords
     requiredDuringInsert: false,
   );
   @override
+  late final GeneratedColumnWithTypeConverter<Severity?, String> severity =
+      GeneratedColumn<String>(
+        'severity',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      ).withConverter<Severity?>($CareRecordsTable.$converterseverityn);
+  static const VerificationMeta _vetClinicMeta = const VerificationMeta(
+    'vetClinic',
+  );
+  @override
+  late final GeneratedColumn<String> vetClinic = GeneratedColumn<String>(
+    'vet_clinic',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _diagnosisMeta = const VerificationMeta(
+    'diagnosis',
+  );
+  @override
+  late final GeneratedColumn<String> diagnosis = GeneratedColumn<String>(
+    'diagnosis',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _costMeta = const VerificationMeta('cost');
+  @override
+  late final GeneratedColumn<double> cost = GeneratedColumn<double>(
+    'cost',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  @override
   List<GeneratedColumn> get $columns => [
     id,
     createdAt,
@@ -2157,6 +2199,10 @@ class $CareRecordsTable extends CareRecords
     title,
     notes,
     sourceReminderId,
+    severity,
+    vetClinic,
+    diagnosis,
+    cost,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -2240,6 +2286,24 @@ class $CareRecordsTable extends CareRecords
         ),
       );
     }
+    if (data.containsKey('vet_clinic')) {
+      context.handle(
+        _vetClinicMeta,
+        vetClinic.isAcceptableOrUnknown(data['vet_clinic']!, _vetClinicMeta),
+      );
+    }
+    if (data.containsKey('diagnosis')) {
+      context.handle(
+        _diagnosisMeta,
+        diagnosis.isAcceptableOrUnknown(data['diagnosis']!, _diagnosisMeta),
+      );
+    }
+    if (data.containsKey('cost')) {
+      context.handle(
+        _costMeta,
+        cost.isAcceptableOrUnknown(data['cost']!, _costMeta),
+      );
+    }
     return context;
   }
 
@@ -2295,6 +2359,24 @@ class $CareRecordsTable extends CareRecords
         DriftSqlType.string,
         data['${effectivePrefix}source_reminder_id'],
       ),
+      severity: $CareRecordsTable.$converterseverityn.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}severity'],
+        ),
+      ),
+      vetClinic: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}vet_clinic'],
+      )!,
+      diagnosis: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}diagnosis'],
+      )!,
+      cost: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}cost'],
+      ),
     );
   }
 
@@ -2305,6 +2387,10 @@ class $CareRecordsTable extends CareRecords
 
   static JsonTypeConverter2<RecordType, String, String> $convertertype =
       const EnumNameConverter<RecordType>(RecordType.values);
+  static JsonTypeConverter2<Severity, String, String> $converterseverity =
+      const EnumNameConverter<Severity>(Severity.values);
+  static JsonTypeConverter2<Severity?, String?, String?> $converterseverityn =
+      JsonTypeConverter2.asNullable($converterseverity);
 }
 
 class CareRecord extends DataClass implements Insertable<CareRecord> {
@@ -2319,6 +2405,10 @@ class CareRecord extends DataClass implements Insertable<CareRecord> {
   final String title;
   final String notes;
   final String? sourceReminderId;
+  final Severity? severity;
+  final String vetClinic;
+  final String diagnosis;
+  final double? cost;
   const CareRecord({
     required this.id,
     required this.createdAt,
@@ -2331,6 +2421,10 @@ class CareRecord extends DataClass implements Insertable<CareRecord> {
     required this.title,
     required this.notes,
     this.sourceReminderId,
+    this.severity,
+    required this.vetClinic,
+    required this.diagnosis,
+    this.cost,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -2356,6 +2450,16 @@ class CareRecord extends DataClass implements Insertable<CareRecord> {
     if (!nullToAbsent || sourceReminderId != null) {
       map['source_reminder_id'] = Variable<String>(sourceReminderId);
     }
+    if (!nullToAbsent || severity != null) {
+      map['severity'] = Variable<String>(
+        $CareRecordsTable.$converterseverityn.toSql(severity),
+      );
+    }
+    map['vet_clinic'] = Variable<String>(vetClinic);
+    map['diagnosis'] = Variable<String>(diagnosis);
+    if (!nullToAbsent || cost != null) {
+      map['cost'] = Variable<double>(cost);
+    }
     return map;
   }
 
@@ -2378,6 +2482,12 @@ class CareRecord extends DataClass implements Insertable<CareRecord> {
       sourceReminderId: sourceReminderId == null && nullToAbsent
           ? const Value.absent()
           : Value(sourceReminderId),
+      severity: severity == null && nullToAbsent
+          ? const Value.absent()
+          : Value(severity),
+      vetClinic: Value(vetClinic),
+      diagnosis: Value(diagnosis),
+      cost: cost == null && nullToAbsent ? const Value.absent() : Value(cost),
     );
   }
 
@@ -2400,6 +2510,12 @@ class CareRecord extends DataClass implements Insertable<CareRecord> {
       title: serializer.fromJson<String>(json['title']),
       notes: serializer.fromJson<String>(json['notes']),
       sourceReminderId: serializer.fromJson<String?>(json['sourceReminderId']),
+      severity: $CareRecordsTable.$converterseverityn.fromJson(
+        serializer.fromJson<String?>(json['severity']),
+      ),
+      vetClinic: serializer.fromJson<String>(json['vetClinic']),
+      diagnosis: serializer.fromJson<String>(json['diagnosis']),
+      cost: serializer.fromJson<double?>(json['cost']),
     );
   }
   @override
@@ -2419,6 +2535,12 @@ class CareRecord extends DataClass implements Insertable<CareRecord> {
       'title': serializer.toJson<String>(title),
       'notes': serializer.toJson<String>(notes),
       'sourceReminderId': serializer.toJson<String?>(sourceReminderId),
+      'severity': serializer.toJson<String?>(
+        $CareRecordsTable.$converterseverityn.toJson(severity),
+      ),
+      'vetClinic': serializer.toJson<String>(vetClinic),
+      'diagnosis': serializer.toJson<String>(diagnosis),
+      'cost': serializer.toJson<double?>(cost),
     };
   }
 
@@ -2434,6 +2556,10 @@ class CareRecord extends DataClass implements Insertable<CareRecord> {
     String? title,
     String? notes,
     Value<String?> sourceReminderId = const Value.absent(),
+    Value<Severity?> severity = const Value.absent(),
+    String? vetClinic,
+    String? diagnosis,
+    Value<double?> cost = const Value.absent(),
   }) => CareRecord(
     id: id ?? this.id,
     createdAt: createdAt ?? this.createdAt,
@@ -2448,6 +2574,10 @@ class CareRecord extends DataClass implements Insertable<CareRecord> {
     sourceReminderId: sourceReminderId.present
         ? sourceReminderId.value
         : this.sourceReminderId,
+    severity: severity.present ? severity.value : this.severity,
+    vetClinic: vetClinic ?? this.vetClinic,
+    diagnosis: diagnosis ?? this.diagnosis,
+    cost: cost.present ? cost.value : this.cost,
   );
   CareRecord copyWithCompanion(CareRecordsCompanion data) {
     return CareRecord(
@@ -2466,6 +2596,10 @@ class CareRecord extends DataClass implements Insertable<CareRecord> {
       sourceReminderId: data.sourceReminderId.present
           ? data.sourceReminderId.value
           : this.sourceReminderId,
+      severity: data.severity.present ? data.severity.value : this.severity,
+      vetClinic: data.vetClinic.present ? data.vetClinic.value : this.vetClinic,
+      diagnosis: data.diagnosis.present ? data.diagnosis.value : this.diagnosis,
+      cost: data.cost.present ? data.cost.value : this.cost,
     );
   }
 
@@ -2482,7 +2616,11 @@ class CareRecord extends DataClass implements Insertable<CareRecord> {
           ..write('occurredAt: $occurredAt, ')
           ..write('title: $title, ')
           ..write('notes: $notes, ')
-          ..write('sourceReminderId: $sourceReminderId')
+          ..write('sourceReminderId: $sourceReminderId, ')
+          ..write('severity: $severity, ')
+          ..write('vetClinic: $vetClinic, ')
+          ..write('diagnosis: $diagnosis, ')
+          ..write('cost: $cost')
           ..write(')'))
         .toString();
   }
@@ -2500,6 +2638,10 @@ class CareRecord extends DataClass implements Insertable<CareRecord> {
     title,
     notes,
     sourceReminderId,
+    severity,
+    vetClinic,
+    diagnosis,
+    cost,
   );
   @override
   bool operator ==(Object other) =>
@@ -2515,7 +2657,11 @@ class CareRecord extends DataClass implements Insertable<CareRecord> {
           other.occurredAt == this.occurredAt &&
           other.title == this.title &&
           other.notes == this.notes &&
-          other.sourceReminderId == this.sourceReminderId);
+          other.sourceReminderId == this.sourceReminderId &&
+          other.severity == this.severity &&
+          other.vetClinic == this.vetClinic &&
+          other.diagnosis == this.diagnosis &&
+          other.cost == this.cost);
 }
 
 class CareRecordsCompanion extends UpdateCompanion<CareRecord> {
@@ -2530,6 +2676,10 @@ class CareRecordsCompanion extends UpdateCompanion<CareRecord> {
   final Value<String> title;
   final Value<String> notes;
   final Value<String?> sourceReminderId;
+  final Value<Severity?> severity;
+  final Value<String> vetClinic;
+  final Value<String> diagnosis;
+  final Value<double?> cost;
   final Value<int> rowid;
   const CareRecordsCompanion({
     this.id = const Value.absent(),
@@ -2543,6 +2693,10 @@ class CareRecordsCompanion extends UpdateCompanion<CareRecord> {
     this.title = const Value.absent(),
     this.notes = const Value.absent(),
     this.sourceReminderId = const Value.absent(),
+    this.severity = const Value.absent(),
+    this.vetClinic = const Value.absent(),
+    this.diagnosis = const Value.absent(),
+    this.cost = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   CareRecordsCompanion.insert({
@@ -2557,6 +2711,10 @@ class CareRecordsCompanion extends UpdateCompanion<CareRecord> {
     this.title = const Value.absent(),
     this.notes = const Value.absent(),
     this.sourceReminderId = const Value.absent(),
+    this.severity = const Value.absent(),
+    this.vetClinic = const Value.absent(),
+    this.diagnosis = const Value.absent(),
+    this.cost = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        createdAt = Value(createdAt),
@@ -2576,6 +2734,10 @@ class CareRecordsCompanion extends UpdateCompanion<CareRecord> {
     Expression<String>? title,
     Expression<String>? notes,
     Expression<String>? sourceReminderId,
+    Expression<String>? severity,
+    Expression<String>? vetClinic,
+    Expression<String>? diagnosis,
+    Expression<double>? cost,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -2590,6 +2752,10 @@ class CareRecordsCompanion extends UpdateCompanion<CareRecord> {
       if (title != null) 'title': title,
       if (notes != null) 'notes': notes,
       if (sourceReminderId != null) 'source_reminder_id': sourceReminderId,
+      if (severity != null) 'severity': severity,
+      if (vetClinic != null) 'vet_clinic': vetClinic,
+      if (diagnosis != null) 'diagnosis': diagnosis,
+      if (cost != null) 'cost': cost,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -2606,6 +2772,10 @@ class CareRecordsCompanion extends UpdateCompanion<CareRecord> {
     Value<String>? title,
     Value<String>? notes,
     Value<String?>? sourceReminderId,
+    Value<Severity?>? severity,
+    Value<String>? vetClinic,
+    Value<String>? diagnosis,
+    Value<double?>? cost,
     Value<int>? rowid,
   }) {
     return CareRecordsCompanion(
@@ -2620,6 +2790,10 @@ class CareRecordsCompanion extends UpdateCompanion<CareRecord> {
       title: title ?? this.title,
       notes: notes ?? this.notes,
       sourceReminderId: sourceReminderId ?? this.sourceReminderId,
+      severity: severity ?? this.severity,
+      vetClinic: vetClinic ?? this.vetClinic,
+      diagnosis: diagnosis ?? this.diagnosis,
+      cost: cost ?? this.cost,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -2662,6 +2836,20 @@ class CareRecordsCompanion extends UpdateCompanion<CareRecord> {
     if (sourceReminderId.present) {
       map['source_reminder_id'] = Variable<String>(sourceReminderId.value);
     }
+    if (severity.present) {
+      map['severity'] = Variable<String>(
+        $CareRecordsTable.$converterseverityn.toSql(severity.value),
+      );
+    }
+    if (vetClinic.present) {
+      map['vet_clinic'] = Variable<String>(vetClinic.value);
+    }
+    if (diagnosis.present) {
+      map['diagnosis'] = Variable<String>(diagnosis.value);
+    }
+    if (cost.present) {
+      map['cost'] = Variable<double>(cost.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -2682,6 +2870,569 @@ class CareRecordsCompanion extends UpdateCompanion<CareRecord> {
           ..write('title: $title, ')
           ..write('notes: $notes, ')
           ..write('sourceReminderId: $sourceReminderId, ')
+          ..write('severity: $severity, ')
+          ..write('vetClinic: $vetClinic, ')
+          ..write('diagnosis: $diagnosis, ')
+          ..write('cost: $cost, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $WeightEntriesTable extends WeightEntries
+    with TableInfo<$WeightEntriesTable, WeightEntry> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $WeightEntriesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _deletedAtMeta = const VerificationMeta(
+    'deletedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> deletedAt = GeneratedColumn<DateTime>(
+    'deleted_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _ownerIdMeta = const VerificationMeta(
+    'ownerId',
+  );
+  @override
+  late final GeneratedColumn<String> ownerId = GeneratedColumn<String>(
+    'owner_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _petIdMeta = const VerificationMeta('petId');
+  @override
+  late final GeneratedColumn<String> petId = GeneratedColumn<String>(
+    'pet_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES pets (id)',
+    ),
+  );
+  static const VerificationMeta _measuredAtMeta = const VerificationMeta(
+    'measuredAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> measuredAt = GeneratedColumn<DateTime>(
+    'measured_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _gramsMeta = const VerificationMeta('grams');
+  @override
+  late final GeneratedColumn<int> grams = GeneratedColumn<int>(
+    'grams',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _notesMeta = const VerificationMeta('notes');
+  @override
+  late final GeneratedColumn<String> notes = GeneratedColumn<String>(
+    'notes',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    createdAt,
+    updatedAt,
+    deletedAt,
+    ownerId,
+    petId,
+    measuredAt,
+    grams,
+    notes,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'weight_entries';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<WeightEntry> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(
+        _deletedAtMeta,
+        deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta),
+      );
+    }
+    if (data.containsKey('owner_id')) {
+      context.handle(
+        _ownerIdMeta,
+        ownerId.isAcceptableOrUnknown(data['owner_id']!, _ownerIdMeta),
+      );
+    }
+    if (data.containsKey('pet_id')) {
+      context.handle(
+        _petIdMeta,
+        petId.isAcceptableOrUnknown(data['pet_id']!, _petIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_petIdMeta);
+    }
+    if (data.containsKey('measured_at')) {
+      context.handle(
+        _measuredAtMeta,
+        measuredAt.isAcceptableOrUnknown(data['measured_at']!, _measuredAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_measuredAtMeta);
+    }
+    if (data.containsKey('grams')) {
+      context.handle(
+        _gramsMeta,
+        grams.isAcceptableOrUnknown(data['grams']!, _gramsMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_gramsMeta);
+    }
+    if (data.containsKey('notes')) {
+      context.handle(
+        _notesMeta,
+        notes.isAcceptableOrUnknown(data['notes']!, _notesMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  WeightEntry map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return WeightEntry(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+      deletedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}deleted_at'],
+      ),
+      ownerId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}owner_id'],
+      ),
+      petId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}pet_id'],
+      )!,
+      measuredAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}measured_at'],
+      )!,
+      grams: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}grams'],
+      )!,
+      notes: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}notes'],
+      )!,
+    );
+  }
+
+  @override
+  $WeightEntriesTable createAlias(String alias) {
+    return $WeightEntriesTable(attachedDatabase, alias);
+  }
+}
+
+class WeightEntry extends DataClass implements Insertable<WeightEntry> {
+  final String id;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  final DateTime? deletedAt;
+  final String? ownerId;
+  final String petId;
+  final DateTime measuredAt;
+  final int grams;
+  final String notes;
+  const WeightEntry({
+    required this.id,
+    required this.createdAt,
+    required this.updatedAt,
+    this.deletedAt,
+    this.ownerId,
+    required this.petId,
+    required this.measuredAt,
+    required this.grams,
+    required this.notes,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt);
+    }
+    if (!nullToAbsent || ownerId != null) {
+      map['owner_id'] = Variable<String>(ownerId);
+    }
+    map['pet_id'] = Variable<String>(petId);
+    map['measured_at'] = Variable<DateTime>(measuredAt);
+    map['grams'] = Variable<int>(grams);
+    map['notes'] = Variable<String>(notes);
+    return map;
+  }
+
+  WeightEntriesCompanion toCompanion(bool nullToAbsent) {
+    return WeightEntriesCompanion(
+      id: Value(id),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+      deletedAt: deletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAt),
+      ownerId: ownerId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(ownerId),
+      petId: Value(petId),
+      measuredAt: Value(measuredAt),
+      grams: Value(grams),
+      notes: Value(notes),
+    );
+  }
+
+  factory WeightEntry.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return WeightEntry(
+      id: serializer.fromJson<String>(json['id']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+      deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
+      ownerId: serializer.fromJson<String?>(json['ownerId']),
+      petId: serializer.fromJson<String>(json['petId']),
+      measuredAt: serializer.fromJson<DateTime>(json['measuredAt']),
+      grams: serializer.fromJson<int>(json['grams']),
+      notes: serializer.fromJson<String>(json['notes']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+      'deletedAt': serializer.toJson<DateTime?>(deletedAt),
+      'ownerId': serializer.toJson<String?>(ownerId),
+      'petId': serializer.toJson<String>(petId),
+      'measuredAt': serializer.toJson<DateTime>(measuredAt),
+      'grams': serializer.toJson<int>(grams),
+      'notes': serializer.toJson<String>(notes),
+    };
+  }
+
+  WeightEntry copyWith({
+    String? id,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    Value<DateTime?> deletedAt = const Value.absent(),
+    Value<String?> ownerId = const Value.absent(),
+    String? petId,
+    DateTime? measuredAt,
+    int? grams,
+    String? notes,
+  }) => WeightEntry(
+    id: id ?? this.id,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+    deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+    ownerId: ownerId.present ? ownerId.value : this.ownerId,
+    petId: petId ?? this.petId,
+    measuredAt: measuredAt ?? this.measuredAt,
+    grams: grams ?? this.grams,
+    notes: notes ?? this.notes,
+  );
+  WeightEntry copyWithCompanion(WeightEntriesCompanion data) {
+    return WeightEntry(
+      id: data.id.present ? data.id.value : this.id,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+      ownerId: data.ownerId.present ? data.ownerId.value : this.ownerId,
+      petId: data.petId.present ? data.petId.value : this.petId,
+      measuredAt: data.measuredAt.present
+          ? data.measuredAt.value
+          : this.measuredAt,
+      grams: data.grams.present ? data.grams.value : this.grams,
+      notes: data.notes.present ? data.notes.value : this.notes,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('WeightEntry(')
+          ..write('id: $id, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('ownerId: $ownerId, ')
+          ..write('petId: $petId, ')
+          ..write('measuredAt: $measuredAt, ')
+          ..write('grams: $grams, ')
+          ..write('notes: $notes')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    createdAt,
+    updatedAt,
+    deletedAt,
+    ownerId,
+    petId,
+    measuredAt,
+    grams,
+    notes,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is WeightEntry &&
+          other.id == this.id &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt &&
+          other.deletedAt == this.deletedAt &&
+          other.ownerId == this.ownerId &&
+          other.petId == this.petId &&
+          other.measuredAt == this.measuredAt &&
+          other.grams == this.grams &&
+          other.notes == this.notes);
+}
+
+class WeightEntriesCompanion extends UpdateCompanion<WeightEntry> {
+  final Value<String> id;
+  final Value<DateTime> createdAt;
+  final Value<DateTime> updatedAt;
+  final Value<DateTime?> deletedAt;
+  final Value<String?> ownerId;
+  final Value<String> petId;
+  final Value<DateTime> measuredAt;
+  final Value<int> grams;
+  final Value<String> notes;
+  final Value<int> rowid;
+  const WeightEntriesCompanion({
+    this.id = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.ownerId = const Value.absent(),
+    this.petId = const Value.absent(),
+    this.measuredAt = const Value.absent(),
+    this.grams = const Value.absent(),
+    this.notes = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  WeightEntriesCompanion.insert({
+    required String id,
+    required DateTime createdAt,
+    required DateTime updatedAt,
+    this.deletedAt = const Value.absent(),
+    this.ownerId = const Value.absent(),
+    required String petId,
+    required DateTime measuredAt,
+    required int grams,
+    this.notes = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       createdAt = Value(createdAt),
+       updatedAt = Value(updatedAt),
+       petId = Value(petId),
+       measuredAt = Value(measuredAt),
+       grams = Value(grams);
+  static Insertable<WeightEntry> custom({
+    Expression<String>? id,
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? updatedAt,
+    Expression<DateTime>? deletedAt,
+    Expression<String>? ownerId,
+    Expression<String>? petId,
+    Expression<DateTime>? measuredAt,
+    Expression<int>? grams,
+    Expression<String>? notes,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (deletedAt != null) 'deleted_at': deletedAt,
+      if (ownerId != null) 'owner_id': ownerId,
+      if (petId != null) 'pet_id': petId,
+      if (measuredAt != null) 'measured_at': measuredAt,
+      if (grams != null) 'grams': grams,
+      if (notes != null) 'notes': notes,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  WeightEntriesCompanion copyWith({
+    Value<String>? id,
+    Value<DateTime>? createdAt,
+    Value<DateTime>? updatedAt,
+    Value<DateTime?>? deletedAt,
+    Value<String?>? ownerId,
+    Value<String>? petId,
+    Value<DateTime>? measuredAt,
+    Value<int>? grams,
+    Value<String>? notes,
+    Value<int>? rowid,
+  }) {
+    return WeightEntriesCompanion(
+      id: id ?? this.id,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      deletedAt: deletedAt ?? this.deletedAt,
+      ownerId: ownerId ?? this.ownerId,
+      petId: petId ?? this.petId,
+      measuredAt: measuredAt ?? this.measuredAt,
+      grams: grams ?? this.grams,
+      notes: notes ?? this.notes,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt.value);
+    }
+    if (ownerId.present) {
+      map['owner_id'] = Variable<String>(ownerId.value);
+    }
+    if (petId.present) {
+      map['pet_id'] = Variable<String>(petId.value);
+    }
+    if (measuredAt.present) {
+      map['measured_at'] = Variable<DateTime>(measuredAt.value);
+    }
+    if (grams.present) {
+      map['grams'] = Variable<int>(grams.value);
+    }
+    if (notes.present) {
+      map['notes'] = Variable<String>(notes.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('WeightEntriesCompanion(')
+          ..write('id: $id, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('ownerId: $ownerId, ')
+          ..write('petId: $petId, ')
+          ..write('measuredAt: $measuredAt, ')
+          ..write('grams: $grams, ')
+          ..write('notes: $notes, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -2694,6 +3445,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $PetsTable pets = $PetsTable(this);
   late final $ReminderRulesTable reminderRules = $ReminderRulesTable(this);
   late final $CareRecordsTable careRecords = $CareRecordsTable(this);
+  late final $WeightEntriesTable weightEntries = $WeightEntriesTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -2702,6 +3454,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     pets,
     reminderRules,
     careRecords,
+    weightEntries,
   ];
 }
 
@@ -2785,6 +3538,24 @@ final class $$PetsTableReferences
     ).filter((f) => f.petId.id.sqlEquals($_itemColumn<String>('id')!));
 
     final cache = $_typedResult.readTableOrNull(_careRecordsRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<$WeightEntriesTable, List<WeightEntry>>
+  _weightEntriesRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.weightEntries,
+    aliasName: 'pets__id__weight_entries__pet_id',
+  );
+
+  $$WeightEntriesTableProcessedTableManager get weightEntriesRefs {
+    final manager = $$WeightEntriesTableTableManager(
+      $_db,
+      $_db.weightEntries,
+    ).filter((f) => f.petId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_weightEntriesRefsTable($_db));
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: cache),
     );
@@ -2937,6 +3708,31 @@ class $$PetsTableFilterComposer extends Composer<_$AppDatabase, $PetsTable> {
           }) => $$CareRecordsTableFilterComposer(
             $db: $db,
             $table: $db.careRecords,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> weightEntriesRefs(
+    Expression<bool> Function($$WeightEntriesTableFilterComposer f) f,
+  ) {
+    final $$WeightEntriesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.weightEntries,
+      getReferencedColumn: (t) => t.petId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$WeightEntriesTableFilterComposer(
+            $db: $db,
+            $table: $db.weightEntries,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -3172,6 +3968,31 @@ class $$PetsTableAnnotationComposer
     );
     return f(composer);
   }
+
+  Expression<T> weightEntriesRefs<T extends Object>(
+    Expression<T> Function($$WeightEntriesTableAnnotationComposer a) f,
+  ) {
+    final $$WeightEntriesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.weightEntries,
+      getReferencedColumn: (t) => t.petId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$WeightEntriesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.weightEntries,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$PetsTableTableManager
@@ -3187,7 +4008,11 @@ class $$PetsTableTableManager
           $$PetsTableUpdateCompanionBuilder,
           (Pet, $$PetsTableReferences),
           Pet,
-          PrefetchHooks Function({bool reminderRulesRefs, bool careRecordsRefs})
+          PrefetchHooks Function({
+            bool reminderRulesRefs,
+            bool careRecordsRefs,
+            bool weightEntriesRefs,
+          })
         > {
   $$PetsTableTableManager(_$AppDatabase db, $PetsTable table)
     : super(
@@ -3297,12 +4122,17 @@ class $$PetsTableTableManager
               )
               .toList(),
           prefetchHooksCallback:
-              ({reminderRulesRefs = false, careRecordsRefs = false}) {
+              ({
+                reminderRulesRefs = false,
+                careRecordsRefs = false,
+                weightEntriesRefs = false,
+              }) {
                 return PrefetchHooks(
                   db: db,
                   explicitlyWatchedTables: [
                     if (reminderRulesRefs) db.reminderRules,
                     if (careRecordsRefs) db.careRecords,
+                    if (weightEntriesRefs) db.weightEntries,
                   ],
                   addJoins: null,
                   getPrefetchedDataCallback: (items) async {
@@ -3345,6 +4175,25 @@ class $$PetsTableTableManager
                           referencedColumn: 'pet_id',
                           typedResults: items,
                         ),
+                      if (weightEntriesRefs)
+                        await $_getPrefetchedDataByColumns<
+                          Pet,
+                          $PetsTable,
+                          WeightEntry,
+                          $WeightEntriesTable
+                        >(
+                          currentTable: table,
+                          referencedTable: $$PetsTableReferences
+                              ._weightEntriesRefsTable(db),
+                          managerFromTypedResult: (p0) => $$PetsTableReferences(
+                            db,
+                            table,
+                            p0,
+                          ).weightEntriesRefs,
+                          currentColumn: 'id',
+                          referencedColumn: 'pet_id',
+                          typedResults: items,
+                        ),
                     ];
                   },
                 );
@@ -3365,7 +4214,11 @@ typedef $$PetsTableProcessedTableManager =
       $$PetsTableUpdateCompanionBuilder,
       (Pet, $$PetsTableReferences),
       Pet,
-      PrefetchHooks Function({bool reminderRulesRefs, bool careRecordsRefs})
+      PrefetchHooks Function({
+        bool reminderRulesRefs,
+        bool careRecordsRefs,
+        bool weightEntriesRefs,
+      })
     >;
 typedef $$ReminderRulesTableCreateCompanionBuilder =
     ReminderRulesCompanion Function({
@@ -3940,6 +4793,10 @@ typedef $$CareRecordsTableCreateCompanionBuilder =
       Value<String> title,
       Value<String> notes,
       Value<String?> sourceReminderId,
+      Value<Severity?> severity,
+      Value<String> vetClinic,
+      Value<String> diagnosis,
+      Value<double?> cost,
       Value<int> rowid,
     });
 typedef $$CareRecordsTableUpdateCompanionBuilder =
@@ -3955,6 +4812,10 @@ typedef $$CareRecordsTableUpdateCompanionBuilder =
       Value<String> title,
       Value<String> notes,
       Value<String?> sourceReminderId,
+      Value<Severity?> severity,
+      Value<String> vetClinic,
+      Value<String> diagnosis,
+      Value<double?> cost,
       Value<int> rowid,
     });
 
@@ -4037,6 +4898,27 @@ class $$CareRecordsTableFilterComposer
 
   ColumnFilters<String> get sourceReminderId => $composableBuilder(
     column: $table.sourceReminderId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnWithTypeConverterFilters<Severity?, Severity, String> get severity =>
+      $composableBuilder(
+        column: $table.severity,
+        builder: (column) => ColumnWithTypeConverterFilters(column),
+      );
+
+  ColumnFilters<String> get vetClinic => $composableBuilder(
+    column: $table.vetClinic,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get diagnosis => $composableBuilder(
+    column: $table.diagnosis,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get cost => $composableBuilder(
+    column: $table.cost,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -4123,6 +5005,26 @@ class $$CareRecordsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get severity => $composableBuilder(
+    column: $table.severity,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get vetClinic => $composableBuilder(
+    column: $table.vetClinic,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get diagnosis => $composableBuilder(
+    column: $table.diagnosis,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get cost => $composableBuilder(
+    column: $table.cost,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   $$PetsTableOrderingComposer get petId {
     final $$PetsTableOrderingComposer composer = $composerBuilder(
       composer: this,
@@ -4190,6 +5092,18 @@ class $$CareRecordsTableAnnotationComposer
     builder: (column) => column,
   );
 
+  GeneratedColumnWithTypeConverter<Severity?, String> get severity =>
+      $composableBuilder(column: $table.severity, builder: (column) => column);
+
+  GeneratedColumn<String> get vetClinic =>
+      $composableBuilder(column: $table.vetClinic, builder: (column) => column);
+
+  GeneratedColumn<String> get diagnosis =>
+      $composableBuilder(column: $table.diagnosis, builder: (column) => column);
+
+  GeneratedColumn<double> get cost =>
+      $composableBuilder(column: $table.cost, builder: (column) => column);
+
   $$PetsTableAnnotationComposer get petId {
     final $$PetsTableAnnotationComposer composer = $composerBuilder(
       composer: this,
@@ -4253,6 +5167,10 @@ class $$CareRecordsTableTableManager
                 Value<String> title = const Value.absent(),
                 Value<String> notes = const Value.absent(),
                 Value<String?> sourceReminderId = const Value.absent(),
+                Value<Severity?> severity = const Value.absent(),
+                Value<String> vetClinic = const Value.absent(),
+                Value<String> diagnosis = const Value.absent(),
+                Value<double?> cost = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => CareRecordsCompanion(
                 id: id,
@@ -4266,6 +5184,10 @@ class $$CareRecordsTableTableManager
                 title: title,
                 notes: notes,
                 sourceReminderId: sourceReminderId,
+                severity: severity,
+                vetClinic: vetClinic,
+                diagnosis: diagnosis,
+                cost: cost,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -4281,6 +5203,10 @@ class $$CareRecordsTableTableManager
                 Value<String> title = const Value.absent(),
                 Value<String> notes = const Value.absent(),
                 Value<String?> sourceReminderId = const Value.absent(),
+                Value<Severity?> severity = const Value.absent(),
+                Value<String> vetClinic = const Value.absent(),
+                Value<String> diagnosis = const Value.absent(),
+                Value<double?> cost = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => CareRecordsCompanion.insert(
                 id: id,
@@ -4294,6 +5220,10 @@ class $$CareRecordsTableTableManager
                 title: title,
                 notes: notes,
                 sourceReminderId: sourceReminderId,
+                severity: severity,
+                vetClinic: vetClinic,
+                diagnosis: diagnosis,
+                cost: cost,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
@@ -4361,6 +5291,403 @@ typedef $$CareRecordsTableProcessedTableManager =
       CareRecord,
       PrefetchHooks Function({bool petId})
     >;
+typedef $$WeightEntriesTableCreateCompanionBuilder =
+    WeightEntriesCompanion Function({
+      required String id,
+      required DateTime createdAt,
+      required DateTime updatedAt,
+      Value<DateTime?> deletedAt,
+      Value<String?> ownerId,
+      required String petId,
+      required DateTime measuredAt,
+      required int grams,
+      Value<String> notes,
+      Value<int> rowid,
+    });
+typedef $$WeightEntriesTableUpdateCompanionBuilder =
+    WeightEntriesCompanion Function({
+      Value<String> id,
+      Value<DateTime> createdAt,
+      Value<DateTime> updatedAt,
+      Value<DateTime?> deletedAt,
+      Value<String?> ownerId,
+      Value<String> petId,
+      Value<DateTime> measuredAt,
+      Value<int> grams,
+      Value<String> notes,
+      Value<int> rowid,
+    });
+
+final class $$WeightEntriesTableReferences
+    extends BaseReferences<_$AppDatabase, $WeightEntriesTable, WeightEntry> {
+  $$WeightEntriesTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $PetsTable _petIdTable(_$AppDatabase db) =>
+      db.pets.createAlias('weight_entries__pet_id__pets__id');
+
+  $$PetsTableProcessedTableManager get petId {
+    final $_column = $_itemColumn<String>('pet_id')!;
+
+    final manager = $$PetsTableTableManager(
+      $_db,
+      $_db.pets,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_petIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$WeightEntriesTableFilterComposer
+    extends Composer<_$AppDatabase, $WeightEntriesTable> {
+  $$WeightEntriesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get ownerId => $composableBuilder(
+    column: $table.ownerId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get measuredAt => $composableBuilder(
+    column: $table.measuredAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get grams => $composableBuilder(
+    column: $table.grams,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get notes => $composableBuilder(
+    column: $table.notes,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$PetsTableFilterComposer get petId {
+    final $$PetsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.petId,
+      referencedTable: $db.pets,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$PetsTableFilterComposer(
+            $db: $db,
+            $table: $db.pets,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$WeightEntriesTableOrderingComposer
+    extends Composer<_$AppDatabase, $WeightEntriesTable> {
+  $$WeightEntriesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get ownerId => $composableBuilder(
+    column: $table.ownerId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get measuredAt => $composableBuilder(
+    column: $table.measuredAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get grams => $composableBuilder(
+    column: $table.grams,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get notes => $composableBuilder(
+    column: $table.notes,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$PetsTableOrderingComposer get petId {
+    final $$PetsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.petId,
+      referencedTable: $db.pets,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$PetsTableOrderingComposer(
+            $db: $db,
+            $table: $db.pets,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$WeightEntriesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $WeightEntriesTable> {
+  $$WeightEntriesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => column);
+
+  GeneratedColumn<String> get ownerId =>
+      $composableBuilder(column: $table.ownerId, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get measuredAt => $composableBuilder(
+    column: $table.measuredAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get grams =>
+      $composableBuilder(column: $table.grams, builder: (column) => column);
+
+  GeneratedColumn<String> get notes =>
+      $composableBuilder(column: $table.notes, builder: (column) => column);
+
+  $$PetsTableAnnotationComposer get petId {
+    final $$PetsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.petId,
+      referencedTable: $db.pets,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$PetsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.pets,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$WeightEntriesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $WeightEntriesTable,
+          WeightEntry,
+          $$WeightEntriesTableFilterComposer,
+          $$WeightEntriesTableOrderingComposer,
+          $$WeightEntriesTableAnnotationComposer,
+          $$WeightEntriesTableCreateCompanionBuilder,
+          $$WeightEntriesTableUpdateCompanionBuilder,
+          (WeightEntry, $$WeightEntriesTableReferences),
+          WeightEntry,
+          PrefetchHooks Function({bool petId})
+        > {
+  $$WeightEntriesTableTableManager(_$AppDatabase db, $WeightEntriesTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$WeightEntriesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$WeightEntriesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$WeightEntriesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<DateTime?> deletedAt = const Value.absent(),
+                Value<String?> ownerId = const Value.absent(),
+                Value<String> petId = const Value.absent(),
+                Value<DateTime> measuredAt = const Value.absent(),
+                Value<int> grams = const Value.absent(),
+                Value<String> notes = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => WeightEntriesCompanion(
+                id: id,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                deletedAt: deletedAt,
+                ownerId: ownerId,
+                petId: petId,
+                measuredAt: measuredAt,
+                grams: grams,
+                notes: notes,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required DateTime createdAt,
+                required DateTime updatedAt,
+                Value<DateTime?> deletedAt = const Value.absent(),
+                Value<String?> ownerId = const Value.absent(),
+                required String petId,
+                required DateTime measuredAt,
+                required int grams,
+                Value<String> notes = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => WeightEntriesCompanion.insert(
+                id: id,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                deletedAt: deletedAt,
+                ownerId: ownerId,
+                petId: petId,
+                measuredAt: measuredAt,
+                grams: grams,
+                notes: notes,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$WeightEntriesTable, WeightEntry>(table),
+                  $$WeightEntriesTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({petId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (petId) {
+                      state = state.withJoin(
+                        currentTable: table,
+                        currentColumn: table.petId,
+                        referencedTable: $$WeightEntriesTableReferences
+                            ._petIdTable(db),
+                        referencedColumn: $$WeightEntriesTableReferences
+                            ._petIdTable(db)
+                            .id,
+                      ) as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$WeightEntriesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $WeightEntriesTable,
+      WeightEntry,
+      $$WeightEntriesTableFilterComposer,
+      $$WeightEntriesTableOrderingComposer,
+      $$WeightEntriesTableAnnotationComposer,
+      $$WeightEntriesTableCreateCompanionBuilder,
+      $$WeightEntriesTableUpdateCompanionBuilder,
+      (WeightEntry, $$WeightEntriesTableReferences),
+      WeightEntry,
+      PrefetchHooks Function({bool petId})
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -4370,4 +5697,6 @@ class $AppDatabaseManager {
       $$ReminderRulesTableTableManager(_db, _db.reminderRules);
   $$CareRecordsTableTableManager get careRecords =>
       $$CareRecordsTableTableManager(_db, _db.careRecords);
+  $$WeightEntriesTableTableManager get weightEntries =>
+      $$WeightEntriesTableTableManager(_db, _db.weightEntries);
 }

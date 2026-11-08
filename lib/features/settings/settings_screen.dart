@@ -12,6 +12,8 @@ import '../../core/settings/app_settings.dart';
 import '../../l10n/app_localizations.dart';
 import '../../shared/formatting.dart';
 import '../../shared/l10n_labels.dart';
+import '../../shared/units.dart';
+import '../records/widgets/record_tile.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -62,6 +64,31 @@ class SettingsScreen extends ConsumerWidget {
                     .set(picked.hour * 60 + picked.minute);
               }
             },
+          ),
+          ListTile(
+            leading: const Icon(Icons.monitor_weight_outlined),
+            title: Text(l10n.settingsWeightUnit),
+            subtitle: Text(
+              ref.watch(weightUnitSettingProvider) == null
+                  ? '${l10n.regionAuto} (${weightUnitSymbol(ref.watch(effectiveWeightUnitProvider))})'
+                  : weightUnitSymbol(ref.watch(weightUnitSettingProvider)!),
+            ),
+            onTap: () => _pickWeightUnit(context, ref),
+          ),
+          ListTile(
+            key: const Key('settings.quickLog'),
+            leading: const Icon(Icons.bolt_outlined),
+            title: Text(l10n.settingsQuickLog),
+            subtitle: Text(
+              ref
+                  .watch(quickLogTypesProvider)
+                  .map((t) => recordTypeLabel(l10n, t))
+                  .join('、'),
+            ),
+            onTap: () => showModalBottomSheet<void>(
+              context: context,
+              builder: (_) => const _QuickLogPicker(),
+            ),
           ),
           const Divider(),
           _SectionHeader(l10n.settingsNotifications),
@@ -130,6 +157,25 @@ class SettingsScreen extends ConsumerWidget {
     }
   }
 
+  Future<void> _pickWeightUnit(BuildContext context, WidgetRef ref) async {
+    final l10n = AppLocalizations.of(context);
+    final options = <({WeightUnit? unit})>[
+      (unit: null),
+      for (final u in WeightUnit.values) (unit: u),
+    ];
+    final picked = await _pickOne<({WeightUnit? unit})>(
+      context,
+      title: l10n.settingsWeightUnit,
+      options: options,
+      current: (unit: ref.read(weightUnitSettingProvider)),
+      label: (o) => o.unit == null ? l10n.regionAuto : weightUnitSymbol(o.unit!),
+      keyOf: (o) => 'weightUnit.${o.unit?.name ?? 'auto'}',
+    );
+    if (picked != null) {
+      await ref.read(weightUnitSettingProvider.notifier).set(picked.unit);
+    }
+  }
+
   Future<void> _pickRegion(
     BuildContext context,
     WidgetRef ref,
@@ -182,6 +228,37 @@ Future<T?> _pickOne<T>(
     ],
   ),
 );
+
+class _QuickLogPicker extends ConsumerWidget {
+  const _QuickLogPicker();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    final selected = ref.watch(quickLogTypesProvider).toSet();
+    return SafeArea(
+      child: ListView(
+        shrinkWrap: true,
+        children: [
+          ListTile(
+            title: Text(
+              l10n.settingsQuickLog,
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+          ),
+          for (final t in kQuickLogTypes)
+            CheckboxListTile(
+              secondary: Icon(recordIcon(t)),
+              title: Text(recordTypeLabel(l10n, t)),
+              value: selected.contains(t),
+              onChanged: (v) =>
+                  ref.read(quickLogTypesProvider.notifier).toggle(t, v ?? false),
+            ),
+        ],
+      ),
+    );
+  }
+}
 
 class _SectionHeader extends StatelessWidget {
   const _SectionHeader(this.text);

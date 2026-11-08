@@ -63,4 +63,18 @@ class CareRecords extends Table with SyncColumns {
   TextColumn get title => text().withDefault(const Constant(''))();
   TextColumn get notes => text().withDefault(const Constant(''))();
   TextColumn get sourceReminderId => text().nullable()();
+
+  // ---- schema v2 ----
+  TextColumn get severity => textEnum<Severity>().nullable()();
+  TextColumn get vetClinic => text().withDefault(const Constant(''))();
+  TextColumn get diagnosis => text().withDefault(const Constant(''))();
+  RealColumn get cost => real().nullable()();
+}
+
+/// Added in schema v2.
+class WeightEntries extends Table with SyncColumns {
+  TextColumn get petId => text().references(Pets, #id)();
+  DateTimeColumn get measuredAt => dateTime()();
+  IntColumn get grams => integer()();
+  TextColumn get notes => text().withDefault(const Constant(''))();
 }

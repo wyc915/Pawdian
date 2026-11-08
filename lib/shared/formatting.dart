@@ -15,6 +15,30 @@ String formatTime(BuildContext context, DateTime d) =>
 String formatDateTime(BuildContext context, DateTime d) =>
     '${formatDate(context, d)} ${formatTime(context, d)}';
 
+/// Plain number without currency symbol (users enter amounts in their own
+/// currency), e.g. "1,250" or "12.5".
+String formatAmount(BuildContext context, double amount) =>
+    NumberFormat.decimalPattern(AppLocalizations.of(context).localeName)
+        .format(amount);
+
+/// Picks a date and then a time; returns null if either is cancelled.
+Future<DateTime?> pickDateTime(BuildContext context, DateTime initial) async {
+  final now = DateTime.now();
+  final date = await showDatePicker(
+    context: context,
+    initialDate: initial,
+    firstDate: DateTime(now.year - 30),
+    lastDate: DateTime(now.year + 1),
+  );
+  if (date == null || !context.mounted) return null;
+  final time = await showTimePicker(
+    context: context,
+    initialTime: TimeOfDay.fromDateTime(initial),
+  );
+  if (time == null) return null;
+  return DateTime(date.year, date.month, date.day, time.hour, time.minute);
+}
+
 String formatMinute(BuildContext context, int minuteOfDay) =>
     MaterialLocalizations.of(context).formatTimeOfDay(
       TimeOfDay(hour: minuteOfDay ~/ 60, minute: minuteOfDay % 60),

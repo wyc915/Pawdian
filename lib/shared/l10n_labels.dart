@@ -38,6 +38,33 @@ String recordTypeLabel(AppLocalizations l, RecordType t) => switch (t) {
   RecordType.grooming => l.reminderTypeGrooming,
   RecordType.checkup => l.reminderTypeCheckup,
   RecordType.custom => l.reminderTypeCustom,
+  RecordType.feeding => l.recordTypeFeeding,
+  RecordType.water => l.recordTypeWater,
+  RecordType.poop => l.recordTypePoop,
+  RecordType.urine => l.recordTypeUrine,
+  RecordType.vomit => l.recordTypeVomit,
+  RecordType.cough => l.recordTypeCough,
+  RecordType.lethargy => l.recordTypeLethargy,
+  RecordType.appetiteLoss => l.recordTypeAppetiteLoss,
+  RecordType.vetVisit => l.recordTypeVetVisit,
+  RecordType.note => l.recordTypeNote,
+};
+
+String severityLabel(AppLocalizations l, Severity? s) => switch (s) {
+  null => l.severityNone,
+  Severity.mild => l.severityMild,
+  Severity.moderate => l.severityModerate,
+  Severity.severe => l.severitySevere,
+};
+
+String categoryLabel(AppLocalizations l, RecordCategory? c) => switch (c) {
+  null => l.categoryAll,
+  RecordCategory.care => l.categoryCare,
+  RecordCategory.medication => l.categoryMedication,
+  RecordCategory.daily => l.categoryDaily,
+  RecordCategory.symptom => l.categorySymptom,
+  RecordCategory.vet => l.categoryVet,
+  RecordCategory.weight => l.categoryWeight,
 };
 
 String repeatLabel(AppLocalizations l, RepeatUnit unit, int interval) =>

@@ -39,6 +39,69 @@ final effectiveCareRegionProvider = Provider<CareRegion>((ref) {
       regionForCountry(PlatformDispatcher.instance.locale.countryCode);
 });
 
+/// Weight unit preference: null = automatic (lb in the US, kg elsewhere).
+final weightUnitSettingProvider =
+    NotifierProvider<WeightUnitSetting, WeightUnit?>(WeightUnitSetting.new);
+
+class WeightUnitSetting extends Notifier<WeightUnit?> {
+  static const _key = 'weight_unit';
+
+  @override
+  WeightUnit? build() {
+    final saved = ref.read(sharedPreferencesProvider).getString(_key);
+    return WeightUnit.values.where((u) => u.name == saved).firstOrNull;
+  }
+
+  Future<void> set(WeightUnit? unit) async {
+    state = unit;
+    final prefs = ref.read(sharedPreferencesProvider);
+    if (unit == null) {
+      await prefs.remove(_key);
+    } else {
+      await prefs.setString(_key, unit.name);
+    }
+  }
+}
+
+WeightUnit weightUnitForCountry(String? countryCode) =>
+    countryCode == 'US' ? WeightUnit.lb : WeightUnit.kg;
+
+final effectiveWeightUnitProvider = Provider<WeightUnit>((ref) {
+  return ref.watch(weightUnitSettingProvider) ??
+      weightUnitForCountry(PlatformDispatcher.instance.locale.countryCode);
+});
+
+/// Which quick-log buttons are shown (order follows [kQuickLogTypes]).
+final quickLogTypesProvider =
+    NotifierProvider<QuickLogTypesSetting, List<RecordType>>(
+      QuickLogTypesSetting.new,
+    );
+
+class QuickLogTypesSetting extends Notifier<List<RecordType>> {
+  static const _key = 'quick_log_types';
+
+  @override
+  List<RecordType> build() {
+    final saved = ref.read(sharedPreferencesProvider).getStringList(_key);
+    final selected = saved == null
+        ? kDefaultQuickLogTypes
+        : saved
+              .map((n) => RecordType.values.where((t) => t.name == n).firstOrNull)
+              .nonNulls
+              .toSet();
+    return [for (final t in kQuickLogTypes) if (selected.contains(t)) t];
+  }
+
+  Future<void> toggle(RecordType type, bool enabled) async {
+    final next = {...state};
+    enabled ? next.add(type) : next.remove(type);
+    state = [for (final t in kQuickLogTypes) if (next.contains(t)) t];
+    await ref
+        .read(sharedPreferencesProvider)
+        .setStringList(_key, [for (final t in state) t.name]);
+  }
+}
+
 /// Default time of day (minutes since midnight) for new reminders.
 final defaultReminderTimeProvider =
     NotifierProvider<DefaultReminderTime, int>(DefaultReminderTime.new);

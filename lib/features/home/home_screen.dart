@@ -8,6 +8,7 @@ import '../../l10n/app_localizations.dart';
 import '../../shared/widgets/empty_state.dart';
 import '../pets/data/pet_repository.dart';
 import '../pets/pets_screen.dart';
+import '../records/quick_log.dart';
 import '../reminders/data/reminder_repository.dart';
 import '../reminders/widgets/reminder_tile.dart';
 
@@ -60,22 +61,28 @@ class HomeScreen extends ConsumerWidget {
           upcoming.add(item);
         }
       }
-      if (overdue.isEmpty && today.isEmpty && upcoming.isEmpty) {
-        body = EmptyState(
-          icon: Icons.event_available_outlined,
-          title: l.homeEmptyTitle,
-          body: l.homeEmptyBody,
-        );
-      } else {
-        body = ListView(
-          padding: const EdgeInsets.only(bottom: 24),
-          children: [
+      final activePets = pets.where((p) => !p.isArchived).toList();
+      body = ListView(
+        padding: const EdgeInsets.only(bottom: 24),
+        children: [
+          QuickLogBar(pets: activePets),
+          const Divider(),
+          if (overdue.isEmpty && today.isEmpty && upcoming.isEmpty)
+            Padding(
+              padding: const EdgeInsets.only(top: 32),
+              child: EmptyState(
+                icon: Icons.event_available_outlined,
+                title: l.homeEmptyTitle,
+                body: l.homeEmptyBody,
+              ),
+            )
+          else ...[
             ..._section(context, l.homeOverdue, overdue),
             ..._section(context, l.homeToday, today),
             ..._section(context, l.homeUpcoming, upcoming),
           ],
-        );
-      }
+        ],
+      );
     }
 
     return Scaffold(

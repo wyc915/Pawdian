@@ -129,4 +129,58 @@ void main() {
     expect(find.text('Pawdian Pro'), findsOneWidget);
     await settle(tester);
   });
+
+  testWidgets('quick log, weight and timeline on the pet page', (
+    tester,
+  ) async {
+    // A phone-sized screen so the whole pet page fits.
+    tester.view.physicalSize = const Size(800, 1800);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    final app = await pumpPawdian(tester);
+    await tester.tap(find.byKey(const Key('home.addPet')));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byKey(const Key('petForm.name')), 'Mochi');
+    await tester.tap(find.byKey(const Key('petForm.save')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('templates.skip')));
+    await tester.pumpAndSettle();
+
+    // One-tap log on the pet page.
+    await tester.tap(find.byKey(const Key('quickLog.vomit')));
+    await tester.pumpAndSettle();
+    expect(find.text('Logged Vomit for Mochi'), findsOneWidget);
+    expect(await app.db.select(app.db.careRecords).get(), hasLength(1));
+
+    // Let the snack bar time out so it does not cover the buttons below.
+    await tester.pump(const Duration(seconds: 5));
+    await tester.pumpAndSettle();
+
+    // Weight (test device locale is en_US, so pounds).
+    await tester.ensureVisible(find.byKey(const Key('petDetail.addWeight')));
+    await tester.tap(find.byKey(const Key('petDetail.addWeight')));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byKey(const Key('weight.value')), 'abc');
+    await tester.tap(find.byKey(const Key('weight.save')));
+    await tester.pumpAndSettle();
+    expect(find.text('Enter a valid weight'), findsOneWidget);
+    await tester.enterText(find.byKey(const Key('weight.value')), '9.5');
+    await tester.tap(find.byKey(const Key('weight.save')));
+    await tester.pumpAndSettle();
+    expect(find.text('Latest 9.5 lb'), findsOneWidget);
+
+    // Timeline shows both, and filters.
+    await tester.ensureVisible(find.byKey(const Key('petDetail.timeline')));
+    await tester.tap(find.byKey(const Key('petDetail.timeline')));
+    await tester.pumpAndSettle();
+    expect(find.text('Vomit'), findsOneWidget);
+    expect(find.text('Weight 9.5 lb'), findsOneWidget);
+    await tester.ensureVisible(find.byKey(const Key('timeline.filter.weight')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('timeline.filter.weight')));
+    await tester.pumpAndSettle();
+    expect(find.text('Vomit'), findsNothing);
+    expect(find.text('Weight 9.5 lb'), findsOneWidget);
+    await settle(tester);
+  });
 }

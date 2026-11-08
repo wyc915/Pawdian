@@ -535,4 +535,181 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get languageChineseTraditional => '繁體中文';
+
+  @override
+  String get recordTypeFeeding => 'Feeding';
+
+  @override
+  String get recordTypeWater => 'Water';
+
+  @override
+  String get recordTypePoop => 'Poop';
+
+  @override
+  String get recordTypeUrine => 'Pee';
+
+  @override
+  String get recordTypeVomit => 'Vomit';
+
+  @override
+  String get recordTypeCough => 'Cough';
+
+  @override
+  String get recordTypeLethargy => 'Low energy';
+
+  @override
+  String get recordTypeAppetiteLoss => 'Poor appetite';
+
+  @override
+  String get recordTypeVetVisit => 'Vet visit';
+
+  @override
+  String get recordTypeNote => 'Note';
+
+  @override
+  String get severityNone => 'Not specified';
+
+  @override
+  String get severityMild => 'Mild';
+
+  @override
+  String get severityModerate => 'Moderate';
+
+  @override
+  String get severitySevere => 'Severe';
+
+  @override
+  String get categoryAll => 'All';
+
+  @override
+  String get categoryCare => 'Care';
+
+  @override
+  String get categoryMedication => 'Medication';
+
+  @override
+  String get categoryDaily => 'Daily';
+
+  @override
+  String get categorySymptom => 'Symptoms';
+
+  @override
+  String get categoryVet => 'Vet';
+
+  @override
+  String get categoryWeight => 'Weight';
+
+  @override
+  String get quickLogTitle => 'Quick log';
+
+  @override
+  String quickLogDone(String type, String pet) {
+    return 'Logged $type for $pet';
+  }
+
+  @override
+  String get quickLogAddNote => 'Add details';
+
+  @override
+  String get quickLogPickPet => 'Which pet?';
+
+  @override
+  String get addRecord => 'Add record';
+
+  @override
+  String get recordFormNewTitle => 'New record';
+
+  @override
+  String get recordFormEditTitle => 'Edit record';
+
+  @override
+  String get fieldDate => 'Date';
+
+  @override
+  String get fieldTime => 'Time';
+
+  @override
+  String get fieldSeverity => 'Severity';
+
+  @override
+  String get fieldDiagnosis => 'Diagnosis / summary';
+
+  @override
+  String get fieldCost => 'Cost';
+
+  @override
+  String get fieldNextVisit => 'Next visit';
+
+  @override
+  String get revisitReminderTitle => 'Follow-up visit';
+
+  @override
+  String get deleteRecordConfirm => 'Delete this record?';
+
+  @override
+  String costLabel(String amount) {
+    return 'Cost $amount';
+  }
+
+  @override
+  String get weightTitle => 'Weight';
+
+  @override
+  String get addWeight => 'Add weight';
+
+  @override
+  String get fieldWeight => 'Weight';
+
+  @override
+  String get weightInvalid => 'Enter a valid weight';
+
+  @override
+  String get weightEmpty => 'No weight records yet';
+
+  @override
+  String weightLatest(String value) {
+    return 'Latest $value';
+  }
+
+  @override
+  String weightEntryTitle(String value) {
+    return 'Weight $value';
+  }
+
+  @override
+  String get rangeMonth => '1M';
+
+  @override
+  String get range3Months => '3M';
+
+  @override
+  String get rangeYear => '1Y';
+
+  @override
+  String get rangeAll => 'All';
+
+  @override
+  String get proWeightHistory =>
+      'The free version shows the last 3 months. Pawdian Pro (coming soon) unlocks the full history.';
+
+  @override
+  String get deleteWeightConfirm => 'Delete this weight entry?';
+
+  @override
+  String get settingsWeightUnit => 'Weight unit';
+
+  @override
+  String get settingsQuickLog => 'Quick log buttons';
+
+  @override
+  String get timelineTitle => 'Timeline';
+
+  @override
+  String get viewAll => 'View all';
+
+  @override
+  String get searchHint => 'Search notes';
+
+  @override
+  String get timelineEmpty => 'No matching records';
 }
