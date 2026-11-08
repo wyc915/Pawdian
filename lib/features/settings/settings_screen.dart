@@ -30,6 +30,22 @@ class SettingsScreen extends ConsumerWidget {
       body: ListView(
         children: [
           ListTile(
+            key: const Key('settings.pro'),
+            leading: Icon(
+              Icons.workspace_premium_outlined,
+              color: Theme.of(context).colorScheme.primary,
+            ),
+            title: Text(l10n.settingsPro),
+            subtitle: Text(
+              ref.watch(isProProvider)
+                  ? l10n.settingsProActive
+                  : l10n.settingsProFree,
+            ),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => context.go(AppRoutes.pro),
+          ),
+          const Divider(),
+          ListTile(
             key: const Key('settings.language'),
             leading: const Icon(Icons.language),
             title: Text(l10n.settingsLanguage),
@@ -83,7 +99,7 @@ class SettingsScreen extends ConsumerWidget {
               ref
                   .watch(quickLogTypesProvider)
                   .map((t) => recordTypeLabel(l10n, t))
-                  .join('、'),
+                  .join(l10n.localeName.startsWith('zh') ? '、' : ', '),
             ),
             onTap: () => showModalBottomSheet<void>(
               context: context,
@@ -122,6 +138,15 @@ class SettingsScreen extends ConsumerWidget {
             title: Text(l10n.reminderHelpTitle),
             trailing: const Icon(Icons.chevron_right),
             onTap: () => context.go(AppRoutes.reminderHelp),
+          ),
+          const Divider(),
+          _SectionHeader(l10n.settingsData),
+          ListTile(
+            key: const Key('settings.backup'),
+            leading: const Icon(Icons.backup_outlined),
+            title: Text(l10n.backupTitle),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => context.go(AppRoutes.backup),
           ),
           if (kDebugMode) ...[
             const Divider(),

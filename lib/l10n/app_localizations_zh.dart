@@ -456,7 +456,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get proTitle => 'Pawdian Pro';
 
   @override
-  String get proMultiplePets => '免費版可管理 1 隻寵物，Pawdian Pro（即將推出）可不限數量。';
+  String get proMultiplePets => '免費版可管理 1 隻寵物，Pawdian Pro 可不限數量。';
 
   @override
   String get notifChannelName => '照護提醒';
@@ -660,7 +660,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get rangeAll => '全部';
 
   @override
-  String get proWeightHistory => '免費版可查看近 3 個月的體重曲線，Pawdian Pro（即將推出）可查看完整歷史。';
+  String get proWeightHistory => '免費版可查看近 3 個月的體重曲線，Pawdian Pro 可查看完整歷史。';
 
   @override
   String get deleteWeightConfirm => '要刪除這筆體重紀錄嗎？';
@@ -682,4 +682,201 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get timelineEmpty => '沒有符合的紀錄';
+
+  @override
+  String get proLearnMore => '了解 Pro';
+
+  @override
+  String get proHeadline => '解鎖全部功能，好好照顧毛孩';
+
+  @override
+  String get proFeaturePets => '不限寵物數量';
+
+  @override
+  String get proFeatureHistory => '完整體重歷史';
+
+  @override
+  String get proFeatureReport => '就醫報告 PDF';
+
+  @override
+  String get proFeatureAttachments => '每筆紀錄不限照片數量';
+
+  @override
+  String get proFeatureCsv => '匯出 CSV 資料';
+
+  @override
+  String get proYearly => '年訂閱';
+
+  @override
+  String get proMonthly => '月訂閱';
+
+  @override
+  String get proLifetime => '終身買斷（一次付清）';
+
+  @override
+  String get proRestore => '恢復購買';
+
+  @override
+  String get proUnavailable => '目前無法連線到 Google Play，請稍後再試。';
+
+  @override
+  String get proActive => '已啟用 Pawdian Pro，謝謝你的支持！';
+
+  @override
+  String get proPending => '付款處理中…';
+
+  @override
+  String proFailed(String message) {
+    return '購買失敗：$message';
+  }
+
+  @override
+  String get proRestored => '已恢復購買';
+
+  @override
+  String get proNothingToRestore => '這個 Google 帳號沒有 Pro 購買紀錄';
+
+  @override
+  String get proTerms => '訂閱會自動續訂，可隨時在 Google Play > 訂閱 中取消。';
+
+  @override
+  String get settingsPro => 'Pawdian Pro';
+
+  @override
+  String get settingsProActive => '已啟用';
+
+  @override
+  String get settingsProFree => '免費版';
+
+  @override
+  String get proAttachments => '免費版每筆紀錄可附 1 張照片，Pawdian Pro 不限數量。';
+
+  @override
+  String get proReport => '就醫報告 PDF 是 Pawdian Pro 功能。';
+
+  @override
+  String get proCsv => '匯出 CSV 是 Pawdian Pro 功能。';
+
+  @override
+  String get settingsData => '資料';
+
+  @override
+  String get backupTitle => '備份與還原';
+
+  @override
+  String get backupIntro =>
+      '資料只存在這支手機上。Android 也會自動把紀錄和設定備份到你的 Google 帳號（不含照片）。若要包含照片的完整備份，請建立備份檔並存到安全的地方。';
+
+  @override
+  String get backupCreateShare => '建立備份並分享';
+
+  @override
+  String get backupCreateSave => '建立備份並存到檔案';
+
+  @override
+  String get backupRestore => '從備份檔還原';
+
+  @override
+  String get backupRestoreConfirm => '還原會用備份檔取代這支手機上的「全部」資料，且無法復原。要繼續嗎？';
+
+  @override
+  String get backupRestoreAction => '取代資料';
+
+  @override
+  String get backupDone => '已建立備份';
+
+  @override
+  String get backupRestored => '已還原備份';
+
+  @override
+  String get backupInvalid => '這不是有效的 Pawdian 備份檔';
+
+  @override
+  String get backupTooNew => '這個備份來自較新版本的 Pawdian，請先更新 App。';
+
+  @override
+  String backupLast(String date) {
+    return '上次備份：$date';
+  }
+
+  @override
+  String get backupNever => '尚未建立備份檔';
+
+  @override
+  String get backupStale => '距離上次備份已超過 30 天';
+
+  @override
+  String get csvExport => '匯出 CSV';
+
+  @override
+  String get csvExportHint => '所有寵物的紀錄與體重，可用 Excel 或 Google 試算表開啟';
+
+  @override
+  String get attachmentsTitle => '照片';
+
+  @override
+  String get attachmentAddGallery => '選擇照片';
+
+  @override
+  String get attachmentAddCamera => '拍照';
+
+  @override
+  String get reportTitle => '就醫報告';
+
+  @override
+  String get reportRange => '期間';
+
+  @override
+  String reportDays(int count) {
+    return '近 $count 天';
+  }
+
+  @override
+  String reportGenerated(String date) {
+    return '產生日期 $date';
+  }
+
+  @override
+  String reportPeriod(String from, String to) {
+    return '期間：$from – $to';
+  }
+
+  @override
+  String get reportProfile => '基本資料';
+
+  @override
+  String get reportWeights => '體重';
+
+  @override
+  String get reportSymptoms => '症狀';
+
+  @override
+  String get reportMedication => '用藥';
+
+  @override
+  String get reportCare => '疫苗、驅蟲與照護';
+
+  @override
+  String get reportVetVisits => '看診紀錄';
+
+  @override
+  String get reportNone => '無紀錄';
+
+  @override
+  String get reportColDate => '日期';
+
+  @override
+  String get reportColItem => '項目';
+
+  @override
+  String get reportColDetails => '內容';
+
+  @override
+  String get reportDisclaimer => '本報告由飼主使用 Pawdian 記錄，僅供參考，非醫療紀錄。';
+
+  @override
+  String get widgetNoReminders => '沒有即將到來的提醒';
+
+  @override
+  String get widgetOverdue => '已逾期';
 }

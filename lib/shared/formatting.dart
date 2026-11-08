@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
+import '../core/router/app_router.dart';
 import '../l10n/app_localizations.dart';
 
 String formatDate(BuildContext context, DateTime d) =>
@@ -78,9 +80,17 @@ Future<void> showProDialog(BuildContext context, String message) {
       title: Text(l.proTitle),
       content: Text(message),
       actions: [
-        FilledButton(
+        TextButton(
           onPressed: () => Navigator.pop(context),
-          child: Text(l.actionOk),
+          child: Text(l.actionCancel),
+        ),
+        FilledButton(
+          key: const Key('proDialog.learnMore'),
+          onPressed: () {
+            Navigator.pop(context);
+            GoRouter.of(context).push(AppRoutes.pro);
+          },
+          child: Text(l.proLearnMore),
         ),
       ],
     ),

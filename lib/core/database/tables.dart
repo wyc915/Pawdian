@@ -78,3 +78,11 @@ class WeightEntries extends Table with SyncColumns {
   IntColumn get grams => integer()();
   TextColumn get notes => text().withDefault(const Constant(''))();
 }
+
+/// Photos attached to a care record (e.g. lab reports). Added in schema v3.
+class Attachments extends Table with SyncColumns {
+  TextColumn get recordId => text().references(CareRecords, #id)();
+
+  /// File name inside the app's attachments directory.
+  TextColumn get fileName => text()();
+}

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pawdian/app.dart';
+import 'package:pawdian/core/billing/billing.dart';
 import 'package:pawdian/core/notifications/notification_sync.dart';
 import 'package:pawdian/core/settings/app_language.dart';
 
@@ -181,6 +182,39 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Vomit'), findsNothing);
     expect(find.text('Weight 9.5 lb'), findsOneWidget);
+    await settle(tester);
+  });
+
+  testWidgets('Pro gate leads to the paywall, and buying unlocks it', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(800, 1800);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    final app = await pumpPawdian(tester);
+    await tester.tap(find.byKey(const Key('home.addPet')));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byKey(const Key('petForm.name')), 'Mochi');
+    await tester.tap(find.byKey(const Key('petForm.save')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('templates.skip')));
+    await tester.pumpAndSettle();
+
+    // Report is Pro-only.
+    await tester.tap(find.byKey(const Key('petDetail.report')));
+    await tester.pumpAndSettle();
+    expect(find.text('Vet report PDF is a Pawdian Pro feature.'), findsOneWidget);
+    await tester.tap(find.byKey(const Key('proDialog.learnMore')));
+    await tester.pumpAndSettle();
+
+    // Paywall lists the store's offers.
+    expect(find.text(r'Yearly  $14.99'), findsOneWidget);
+    expect(find.text(r'Lifetime (one-time)  $39.99'), findsOneWidget);
+    await tester.tap(find.text(r'Lifetime (one-time)  $39.99'));
+    await tester.pumpAndSettle();
+    expect(app.billing.bought, [ProProduct.lifetime]);
+    expect(find.text('Pawdian Pro is active. Thank you for your support!'), findsWidgets);
+    expect(app.prefs.getBool('pro_owned'), isTrue);
     await settle(tester);
   });
 }

@@ -484,7 +484,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get proMultiplePets =>
-      'The free version supports 1 pet. Pawdian Pro (coming soon) unlocks unlimited pets.';
+      'The free version supports 1 pet. Pawdian Pro unlocks unlimited pets.';
 
   @override
   String get notifChannelName => 'Care reminders';
@@ -690,7 +690,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get proWeightHistory =>
-      'The free version shows the last 3 months. Pawdian Pro (coming soon) unlocks the full history.';
+      'The free version shows the last 3 months. Pawdian Pro unlocks the full history.';
 
   @override
   String get deleteWeightConfirm => 'Delete this weight entry?';
@@ -712,4 +712,215 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get timelineEmpty => 'No matching records';
+
+  @override
+  String get proLearnMore => 'About Pro';
+
+  @override
+  String get proHeadline => 'Unlock everything for your pets';
+
+  @override
+  String get proFeaturePets => 'Unlimited pets';
+
+  @override
+  String get proFeatureHistory => 'Full weight history';
+
+  @override
+  String get proFeatureReport => 'Vet report PDF';
+
+  @override
+  String get proFeatureAttachments => 'Unlimited photos per record';
+
+  @override
+  String get proFeatureCsv => 'Export data to CSV';
+
+  @override
+  String get proYearly => 'Yearly';
+
+  @override
+  String get proMonthly => 'Monthly';
+
+  @override
+  String get proLifetime => 'Lifetime (one-time)';
+
+  @override
+  String get proRestore => 'Restore purchases';
+
+  @override
+  String get proUnavailable =>
+      'Google Play is not available right now. Please try again later.';
+
+  @override
+  String get proActive => 'Pawdian Pro is active. Thank you for your support!';
+
+  @override
+  String get proPending => 'Payment is pending…';
+
+  @override
+  String proFailed(String message) {
+    return 'Purchase failed: $message';
+  }
+
+  @override
+  String get proRestored => 'Purchases restored';
+
+  @override
+  String get proNothingToRestore =>
+      'No Pro purchase found for this Google account';
+
+  @override
+  String get proTerms =>
+      'Subscriptions renew automatically until cancelled. You can cancel anytime in Google Play > Subscriptions.';
+
+  @override
+  String get settingsPro => 'Pawdian Pro';
+
+  @override
+  String get settingsProActive => 'Active';
+
+  @override
+  String get settingsProFree => 'Free version';
+
+  @override
+  String get proAttachments =>
+      'The free version allows 1 photo per record. Pawdian Pro unlocks unlimited photos.';
+
+  @override
+  String get proReport => 'Vet report PDF is a Pawdian Pro feature.';
+
+  @override
+  String get proCsv => 'CSV export is a Pawdian Pro feature.';
+
+  @override
+  String get settingsData => 'Data';
+
+  @override
+  String get backupTitle => 'Backup & restore';
+
+  @override
+  String get backupIntro =>
+      'Your data is stored only on this phone. Android also backs up records and settings to your Google account automatically (photos excluded). For a complete copy including photos, create a backup file and keep it somewhere safe.';
+
+  @override
+  String get backupCreateShare => 'Create backup and share';
+
+  @override
+  String get backupCreateSave => 'Create backup and save to files';
+
+  @override
+  String get backupRestore => 'Restore from backup file';
+
+  @override
+  String get backupRestoreConfirm =>
+      'Restoring replaces ALL current data on this phone with the backup. This cannot be undone. Continue?';
+
+  @override
+  String get backupRestoreAction => 'Replace data';
+
+  @override
+  String get backupDone => 'Backup created';
+
+  @override
+  String get backupRestored => 'Backup restored';
+
+  @override
+  String get backupInvalid => 'This is not a valid Pawdian backup file';
+
+  @override
+  String get backupTooNew =>
+      'This backup was made by a newer version of Pawdian. Please update the app first.';
+
+  @override
+  String backupLast(String date) {
+    return 'Last backup: $date';
+  }
+
+  @override
+  String get backupNever => 'No backup file created yet';
+
+  @override
+  String get backupStale => 'It has been over 30 days since your last backup';
+
+  @override
+  String get csvExport => 'Export CSV';
+
+  @override
+  String get csvExportHint =>
+      'Records and weights of all pets, for Excel or Google Sheets';
+
+  @override
+  String get attachmentsTitle => 'Photos';
+
+  @override
+  String get attachmentAddGallery => 'Choose photo';
+
+  @override
+  String get attachmentAddCamera => 'Take photo';
+
+  @override
+  String get reportTitle => 'Vet report';
+
+  @override
+  String get reportRange => 'Period';
+
+  @override
+  String reportDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count days',
+      one: '1 day',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String reportGenerated(String date) {
+    return 'Generated $date';
+  }
+
+  @override
+  String reportPeriod(String from, String to) {
+    return 'Period: $from – $to';
+  }
+
+  @override
+  String get reportProfile => 'Profile';
+
+  @override
+  String get reportWeights => 'Weight';
+
+  @override
+  String get reportSymptoms => 'Symptoms';
+
+  @override
+  String get reportMedication => 'Medication';
+
+  @override
+  String get reportCare => 'Vaccines, deworming and care';
+
+  @override
+  String get reportVetVisits => 'Vet visits';
+
+  @override
+  String get reportNone => 'None recorded';
+
+  @override
+  String get reportColDate => 'Date';
+
+  @override
+  String get reportColItem => 'Item';
+
+  @override
+  String get reportColDetails => 'Details';
+
+  @override
+  String get reportDisclaimer =>
+      'Recorded by the owner with Pawdian. For reference only; not a medical record.';
+
+  @override
+  String get widgetNoReminders => 'No upcoming reminders';
+
+  @override
+  String get widgetOverdue => 'Overdue';
 }

@@ -118,22 +118,36 @@ class DefaultReminderTime extends Notifier<int> {
   }
 }
 
-/// Pro entitlement. Real purchases arrive in M3; until then only a debug
-/// switch can unlock it.
+/// Pro entitlement: true when Google Play reports an active Pro purchase
+/// (cached so it also works offline) or, in debug builds, when the developer
+/// switch is on. Purchases are verified on device; see BillingController.
 final isProProvider = NotifierProvider<ProEntitlement, bool>(ProEntitlement.new);
 
 class ProEntitlement extends Notifier<bool> {
   static const _debugKey = 'debug_pro_unlocked';
+  static const _ownedKey = 'pro_owned';
 
-  @override
-  bool build() =>
+  bool get _debug =>
       kDebugMode &&
       (ref.read(sharedPreferencesProvider).getBool(_debugKey) ?? false);
 
+  bool get _owned =>
+      ref.read(sharedPreferencesProvider).getBool(_ownedKey) ?? false;
+
+  @override
+  bool build() => _debug || _owned;
+
+  /// Called with the store's answer; only a definite answer should be passed
+  /// (do not call when the store could not be reached).
+  Future<void> setOwned(bool owned) async {
+    await ref.read(sharedPreferencesProvider).setBool(_ownedKey, owned);
+    state = _debug || owned;
+  }
+
   Future<void> setDebugUnlocked(bool value) async {
     if (!kDebugMode) return;
-    state = value;
     await ref.read(sharedPreferencesProvider).setBool(_debugKey, value);
+    state = value || _owned;
   }
 }
 

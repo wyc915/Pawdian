@@ -9,6 +9,9 @@ import '../../features/pets/pets_screen.dart';
 import '../../features/records/record_form_screen.dart';
 import '../../features/records/timeline_screen.dart';
 import '../../features/reminders/reminder_form_screen.dart';
+import '../../features/backup/backup_screen.dart';
+import '../../features/pro/pro_screen.dart';
+import '../../features/report/report_screen.dart';
 import '../../features/weight/weight_screen.dart';
 import '../domain/enums.dart';
 import '../../features/settings/reminder_help_screen.dart';
@@ -22,6 +25,9 @@ abstract final class AppRoutes {
   static const newPet = '/pets/new';
   static const settings = '/settings';
   static const reminderHelp = '/settings/reminder-help';
+  static const pro = '/settings/pro';
+  static const backup = '/settings/backup';
+  static String report(String petId) => '/pets/$petId/report';
 
   static String pet(String id) => '/pets/$id';
   static String editPet(String id) => '/pets/$id/edit';
@@ -121,6 +127,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                         ),
                       ),
                       GoRoute(
+                        path: 'report',
+                        builder: (context, state) =>
+                            ReportScreen(petId: state.pathParameters['petId']!),
+                      ),
+                      GoRoute(
                         path: 'weight',
                         builder: (context, state) =>
                             WeightScreen(petId: state.pathParameters['petId']!),
@@ -140,6 +151,14 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                   GoRoute(
                     path: 'reminder-help',
                     builder: (context, state) => const ReminderHelpScreen(),
+                  ),
+                  GoRoute(
+                    path: 'pro',
+                    builder: (context, state) => const ProScreen(),
+                  ),
+                  GoRoute(
+                    path: 'backup',
+                    builder: (context, state) => const BackupScreen(),
                   ),
                 ],
               ),

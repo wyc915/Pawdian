@@ -51,6 +51,18 @@ class PetDetailScreen extends ConsumerWidget {
         title: Text(pet.name),
         actions: [
           IconButton(
+            key: const Key('petDetail.report'),
+            tooltip: l.reportTitle,
+            icon: const Icon(Icons.picture_as_pdf_outlined),
+            onPressed: () {
+              if (ref.read(isProProvider)) {
+                context.go(AppRoutes.report(petId));
+              } else {
+                showProDialog(context, l.proReport);
+              }
+            },
+          ),
+          IconButton(
             tooltip: l.actionEdit,
             icon: const Icon(Icons.edit_outlined),
             onPressed: () => context.go(AppRoutes.editPet(petId)),

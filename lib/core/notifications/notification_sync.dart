@@ -10,6 +10,7 @@ import '../../features/reminders/domain/notification_planner.dart';
 import '../../l10n/app_localizations.dart';
 import '../router/app_router.dart';
 import '../settings/app_language.dart';
+import '../widgets/home_widget_sync.dart';
 import 'notification_gateway.dart';
 
 AppLocalizations currentLocalizations(Ref ref) {
@@ -40,6 +41,14 @@ class ReminderScheduler {
       await _ref.read(notificationGatewayProvider).replaceAll(planned, l);
     } catch (e) {
       debugPrint('Scheduling notifications failed: $e');
+    }
+    if (!_ref.mounted) return;
+    try {
+      await _ref
+          .read(homeWidgetGatewayProvider)
+          .show(nextReminderTexts(items, DateTime.now(), l));
+    } catch (e) {
+      debugPrint('Updating home widget failed: $e');
     }
   }
 

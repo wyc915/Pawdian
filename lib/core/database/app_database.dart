@@ -7,15 +7,21 @@ import 'tables.dart';
 
 part 'app_database.g.dart';
 
-@DriftDatabase(tables: [Pets, ReminderRules, CareRecords, WeightEntries])
+/// File name drift_flutter uses inside the app documents directory.
+const kDatabaseFileName = 'pawdian.sqlite';
+
+@DriftDatabase(
+  tables: [Pets, ReminderRules, CareRecords, WeightEntries, Attachments],
+)
 class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor])
     : super(executor ?? driftDatabase(name: 'pawdian'));
 
   /// v1: pets, reminder_rules, care_records (M1)
   /// v2: weight_entries; care_records severity / vet fields (M2)
+  /// v3: attachments (M3)
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -27,6 +33,9 @@ class AppDatabase extends _$AppDatabase {
         await m.addColumn(careRecords, careRecords.diagnosis);
         await m.addColumn(careRecords, careRecords.cost);
       }
+      if (from < 3) {
+        await m.createTable(attachments);
+      }
     },
     beforeOpen: (details) async {
       await customStatement('PRAGMA foreign_keys = ON');
@@ -34,8 +43,16 @@ class AppDatabase extends _$AppDatabase {
   );
 }
 
+/// Invalidated after a backup is restored so every repository reopens the
+/// replaced database file.
 final appDatabaseProvider = Provider<AppDatabase>((ref) {
   final db = AppDatabase();
-  ref.onDispose(db.close);
+  ref.onDispose(() async {
+    try {
+      await db.close();
+    } catch (_) {
+      // Already closed by the restore flow.
+    }
+  });
   return db;
 });

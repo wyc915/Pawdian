@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'core/billing/billing.dart';
 import 'core/notifications/notification_status.dart';
 import 'core/notifications/notification_sync.dart';
 import 'core/router/app_router.dart';
@@ -25,6 +26,8 @@ class _PawdianAppState extends ConsumerState<PawdianApp> {
     _lifecycle = AppLifecycleListener(
       onResume: () => ref.invalidate(notificationStatusProvider),
     );
+    // Listen for purchase updates for the whole app lifetime.
+    ref.read(billingControllerProvider);
   }
 
   @override

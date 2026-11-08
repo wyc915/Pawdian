@@ -1,9 +1,15 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 
+import '../../core/database/app_database.dart';
 import '../../core/domain/enums.dart';
+import '../../core/storage/photo_store.dart';
+import 'data/attachment_repository.dart';
 import '../../core/notifications/notification_status.dart';
 import '../../core/settings/app_settings.dart';
 import '../../l10n/app_localizations.dart';
@@ -44,6 +50,115 @@ class _RecordFormScreenState extends ConsumerState<RecordFormScreen> {
   bool _loading = true;
   bool _saving = false;
 
+  /// Saved photos still attached, newly picked photos, and removed ones.
+  List<Attachment> _existing = [];
+  final List<String> _pickedPaths = [];
+  final List<Attachment> _removed = [];
+
+  int get _photoCount => _existing.length + _pickedPaths.length;
+
+  Future<void> _addPhoto(ImageSource source) async {
+    final l = AppLocalizations.of(context);
+    if (_photoCount >= kFreeAttachmentsPerRecord && !ref.read(isProProvider)) {
+      await showProDialog(context, l.proAttachments);
+      return;
+    }
+    final picked = await ImagePicker().pickImage(
+      source: source,
+      maxWidth: 2048,
+      maxHeight: 2048,
+      imageQuality: 85,
+    );
+    if (picked != null) setState(() => _pickedPaths.add(picked.path));
+  }
+
+  Future<void> _saveAttachments(String recordId) async {
+    final repo = ref.read(attachmentRepositoryProvider);
+    final store = await ref.read(attachmentStoreProvider.future);
+    for (final a in _removed) {
+      await repo.softDelete(a.id);
+      await store.delete(a.fileName);
+    }
+    for (final path in _pickedPaths) {
+      await repo.add(recordId, await store.importFile(path));
+    }
+  }
+
+  void _viewPhoto(ImageProvider image) => showDialog<void>(
+    context: context,
+    builder: (context) => Dialog(
+      insetPadding: const EdgeInsets.all(8),
+      child: InteractiveViewer(child: Image(image: image)),
+    ),
+  );
+
+  Widget _photos(AppLocalizations l) {
+    final store = ref.watch(attachmentStoreProvider).value;
+    Widget thumb(ImageProvider image, VoidCallback onRemove) => Stack(
+      children: [
+        GestureDetector(
+          onTap: () => _viewPhoto(image),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: Image(image: image, width: 88, height: 88, fit: BoxFit.cover),
+          ),
+        ),
+        Positioned(
+          right: 0,
+          top: 0,
+          child: IconButton.filledTonal(
+            visualDensity: VisualDensity.compact,
+            iconSize: 16,
+            icon: const Icon(Icons.close),
+            onPressed: onRemove,
+          ),
+        ),
+      ],
+    );
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(l.attachmentsTitle),
+        const SizedBox(height: 8),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: [
+            if (store != null)
+              for (final a in _existing)
+                thumb(
+                  FileImage(store.fileFor(a.fileName)),
+                  () => setState(() {
+                    _existing = [..._existing]..remove(a);
+                    _removed.add(a);
+                  }),
+                ),
+            for (final path in _pickedPaths)
+              thumb(
+                FileImage(File(path)),
+                () => setState(() => _pickedPaths.remove(path)),
+              ),
+          ],
+        ),
+        Row(
+          children: [
+            TextButton.icon(
+              key: const Key('recordForm.addPhoto'),
+              onPressed: () => _addPhoto(ImageSource.gallery),
+              icon: const Icon(Icons.photo_library_outlined),
+              label: Text(l.attachmentAddGallery),
+            ),
+            TextButton.icon(
+              onPressed: () => _addPhoto(ImageSource.camera),
+              icon: const Icon(Icons.photo_camera_outlined),
+              label: Text(l.attachmentAddCamera),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
   bool get _isEdit => widget.recordId != null;
 
   @override
@@ -66,6 +181,7 @@ class _RecordFormScreenState extends ConsumerState<RecordFormScreen> {
         _diagnosis.text = r.diagnosis;
         _cost.text = r.cost == null ? '' : _trimNumber(r.cost!);
       }
+      _existing = await ref.read(attachmentRepositoryProvider).forRecord(id);
     } else {
       final pet = await ref.read(petRepositoryProvider).get(widget.petId);
       _clinic.text = pet?.vetName ?? '';
@@ -98,11 +214,14 @@ class _RecordFormScreenState extends ConsumerState<RecordFormScreen> {
       cost: double.tryParse(_cost.text.trim().replaceAll(',', '')),
     );
     final repo = ref.read(recordRepositoryProvider);
+    final String recordId;
     if (_isEdit) {
-      await repo.update(widget.recordId!, draft);
+      recordId = widget.recordId!;
+      await repo.update(recordId, draft);
     } else {
-      await repo.create(widget.petId, draft);
+      recordId = await repo.create(widget.petId, draft);
     }
+    await _saveAttachments(recordId);
     if (_type == RecordType.vetVisit && _nextVisit != null) {
       await ref
           .read(reminderRepositoryProvider)
@@ -263,6 +382,8 @@ class _RecordFormScreenState extends ConsumerState<RecordFormScreen> {
                   decoration: InputDecoration(labelText: l.fieldNotes),
                   maxLines: 4,
                 ),
+                const SizedBox(height: 16),
+                _photos(l),
               ],
             ),
     );

@@ -27,9 +27,20 @@ class PhotoStore {
   }
 }
 
-final photoStoreProvider = FutureProvider<PhotoStore>((ref) async {
+Future<PhotoStore> _storeIn(String folder) async {
   final docs = await getApplicationDocumentsDirectory();
-  final dir = Directory(p.join(docs.path, 'pet_photos'));
+  final dir = Directory(p.join(docs.path, folder));
   await dir.create(recursive: true);
   return PhotoStore(dir);
-});
+}
+
+/// Pet profile photos. Folder name must match backup_service.dart and the
+/// Android backup rules.
+final photoStoreProvider = FutureProvider<PhotoStore>(
+  (ref) => _storeIn('pet_photos'),
+);
+
+/// Photos attached to care records.
+final attachmentStoreProvider = FutureProvider<PhotoStore>(
+  (ref) => _storeIn('attachments'),
+);

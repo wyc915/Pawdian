@@ -863,7 +863,7 @@ abstract class AppLocalizations {
   /// No description provided for @proMultiplePets.
   ///
   /// In en, this message translates to:
-  /// **'The free version supports 1 pet. Pawdian Pro (coming soon) unlocks unlimited pets.'**
+  /// **'The free version supports 1 pet. Pawdian Pro unlocks unlimited pets.'**
   String get proMultiplePets;
 
   /// No description provided for @notifChannelName.
@@ -1235,7 +1235,7 @@ abstract class AppLocalizations {
   /// No description provided for @proWeightHistory.
   ///
   /// In en, this message translates to:
-  /// **'The free version shows the last 3 months. Pawdian Pro (coming soon) unlocks the full history.'**
+  /// **'The free version shows the last 3 months. Pawdian Pro unlocks the full history.'**
   String get proWeightHistory;
 
   /// No description provided for @deleteWeightConfirm.
@@ -1279,6 +1279,378 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No matching records'**
   String get timelineEmpty;
+
+  /// No description provided for @proLearnMore.
+  ///
+  /// In en, this message translates to:
+  /// **'About Pro'**
+  String get proLearnMore;
+
+  /// No description provided for @proHeadline.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock everything for your pets'**
+  String get proHeadline;
+
+  /// No description provided for @proFeaturePets.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlimited pets'**
+  String get proFeaturePets;
+
+  /// No description provided for @proFeatureHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Full weight history'**
+  String get proFeatureHistory;
+
+  /// No description provided for @proFeatureReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Vet report PDF'**
+  String get proFeatureReport;
+
+  /// No description provided for @proFeatureAttachments.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlimited photos per record'**
+  String get proFeatureAttachments;
+
+  /// No description provided for @proFeatureCsv.
+  ///
+  /// In en, this message translates to:
+  /// **'Export data to CSV'**
+  String get proFeatureCsv;
+
+  /// No description provided for @proYearly.
+  ///
+  /// In en, this message translates to:
+  /// **'Yearly'**
+  String get proYearly;
+
+  /// No description provided for @proMonthly.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly'**
+  String get proMonthly;
+
+  /// No description provided for @proLifetime.
+  ///
+  /// In en, this message translates to:
+  /// **'Lifetime (one-time)'**
+  String get proLifetime;
+
+  /// No description provided for @proRestore.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore purchases'**
+  String get proRestore;
+
+  /// No description provided for @proUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Google Play is not available right now. Please try again later.'**
+  String get proUnavailable;
+
+  /// No description provided for @proActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Pawdian Pro is active. Thank you for your support!'**
+  String get proActive;
+
+  /// No description provided for @proPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment is pending…'**
+  String get proPending;
+
+  /// No description provided for @proFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Purchase failed: {message}'**
+  String proFailed(String message);
+
+  /// No description provided for @proRestored.
+  ///
+  /// In en, this message translates to:
+  /// **'Purchases restored'**
+  String get proRestored;
+
+  /// No description provided for @proNothingToRestore.
+  ///
+  /// In en, this message translates to:
+  /// **'No Pro purchase found for this Google account'**
+  String get proNothingToRestore;
+
+  /// No description provided for @proTerms.
+  ///
+  /// In en, this message translates to:
+  /// **'Subscriptions renew automatically until cancelled. You can cancel anytime in Google Play > Subscriptions.'**
+  String get proTerms;
+
+  /// No description provided for @settingsPro.
+  ///
+  /// In en, this message translates to:
+  /// **'Pawdian Pro'**
+  String get settingsPro;
+
+  /// No description provided for @settingsProActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get settingsProActive;
+
+  /// No description provided for @settingsProFree.
+  ///
+  /// In en, this message translates to:
+  /// **'Free version'**
+  String get settingsProFree;
+
+  /// No description provided for @proAttachments.
+  ///
+  /// In en, this message translates to:
+  /// **'The free version allows 1 photo per record. Pawdian Pro unlocks unlimited photos.'**
+  String get proAttachments;
+
+  /// No description provided for @proReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Vet report PDF is a Pawdian Pro feature.'**
+  String get proReport;
+
+  /// No description provided for @proCsv.
+  ///
+  /// In en, this message translates to:
+  /// **'CSV export is a Pawdian Pro feature.'**
+  String get proCsv;
+
+  /// No description provided for @settingsData.
+  ///
+  /// In en, this message translates to:
+  /// **'Data'**
+  String get settingsData;
+
+  /// No description provided for @backupTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup & restore'**
+  String get backupTitle;
+
+  /// No description provided for @backupIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Your data is stored only on this phone. Android also backs up records and settings to your Google account automatically (photos excluded). For a complete copy including photos, create a backup file and keep it somewhere safe.'**
+  String get backupIntro;
+
+  /// No description provided for @backupCreateShare.
+  ///
+  /// In en, this message translates to:
+  /// **'Create backup and share'**
+  String get backupCreateShare;
+
+  /// No description provided for @backupCreateSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Create backup and save to files'**
+  String get backupCreateSave;
+
+  /// No description provided for @backupRestore.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore from backup file'**
+  String get backupRestore;
+
+  /// No description provided for @backupRestoreConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Restoring replaces ALL current data on this phone with the backup. This cannot be undone. Continue?'**
+  String get backupRestoreConfirm;
+
+  /// No description provided for @backupRestoreAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Replace data'**
+  String get backupRestoreAction;
+
+  /// No description provided for @backupDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup created'**
+  String get backupDone;
+
+  /// No description provided for @backupRestored.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup restored'**
+  String get backupRestored;
+
+  /// No description provided for @backupInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'This is not a valid Pawdian backup file'**
+  String get backupInvalid;
+
+  /// No description provided for @backupTooNew.
+  ///
+  /// In en, this message translates to:
+  /// **'This backup was made by a newer version of Pawdian. Please update the app first.'**
+  String get backupTooNew;
+
+  /// No description provided for @backupLast.
+  ///
+  /// In en, this message translates to:
+  /// **'Last backup: {date}'**
+  String backupLast(String date);
+
+  /// No description provided for @backupNever.
+  ///
+  /// In en, this message translates to:
+  /// **'No backup file created yet'**
+  String get backupNever;
+
+  /// No description provided for @backupStale.
+  ///
+  /// In en, this message translates to:
+  /// **'It has been over 30 days since your last backup'**
+  String get backupStale;
+
+  /// No description provided for @csvExport.
+  ///
+  /// In en, this message translates to:
+  /// **'Export CSV'**
+  String get csvExport;
+
+  /// No description provided for @csvExportHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Records and weights of all pets, for Excel or Google Sheets'**
+  String get csvExportHint;
+
+  /// No description provided for @attachmentsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Photos'**
+  String get attachmentsTitle;
+
+  /// No description provided for @attachmentAddGallery.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose photo'**
+  String get attachmentAddGallery;
+
+  /// No description provided for @attachmentAddCamera.
+  ///
+  /// In en, this message translates to:
+  /// **'Take photo'**
+  String get attachmentAddCamera;
+
+  /// No description provided for @reportTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Vet report'**
+  String get reportTitle;
+
+  /// No description provided for @reportRange.
+  ///
+  /// In en, this message translates to:
+  /// **'Period'**
+  String get reportRange;
+
+  /// No description provided for @reportDays.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 day} other{{count} days}}'**
+  String reportDays(int count);
+
+  /// No description provided for @reportGenerated.
+  ///
+  /// In en, this message translates to:
+  /// **'Generated {date}'**
+  String reportGenerated(String date);
+
+  /// No description provided for @reportPeriod.
+  ///
+  /// In en, this message translates to:
+  /// **'Period: {from} – {to}'**
+  String reportPeriod(String from, String to);
+
+  /// No description provided for @reportProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile'**
+  String get reportProfile;
+
+  /// No description provided for @reportWeights.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight'**
+  String get reportWeights;
+
+  /// No description provided for @reportSymptoms.
+  ///
+  /// In en, this message translates to:
+  /// **'Symptoms'**
+  String get reportSymptoms;
+
+  /// No description provided for @reportMedication.
+  ///
+  /// In en, this message translates to:
+  /// **'Medication'**
+  String get reportMedication;
+
+  /// No description provided for @reportCare.
+  ///
+  /// In en, this message translates to:
+  /// **'Vaccines, deworming and care'**
+  String get reportCare;
+
+  /// No description provided for @reportVetVisits.
+  ///
+  /// In en, this message translates to:
+  /// **'Vet visits'**
+  String get reportVetVisits;
+
+  /// No description provided for @reportNone.
+  ///
+  /// In en, this message translates to:
+  /// **'None recorded'**
+  String get reportNone;
+
+  /// No description provided for @reportColDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get reportColDate;
+
+  /// No description provided for @reportColItem.
+  ///
+  /// In en, this message translates to:
+  /// **'Item'**
+  String get reportColItem;
+
+  /// No description provided for @reportColDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Details'**
+  String get reportColDetails;
+
+  /// No description provided for @reportDisclaimer.
+  ///
+  /// In en, this message translates to:
+  /// **'Recorded by the owner with Pawdian. For reference only; not a medical record.'**
+  String get reportDisclaimer;
+
+  /// No description provided for @widgetNoReminders.
+  ///
+  /// In en, this message translates to:
+  /// **'No upcoming reminders'**
+  String get widgetNoReminders;
+
+  /// No description provided for @widgetOverdue.
+  ///
+  /// In en, this message translates to:
+  /// **'Overdue'**
+  String get widgetOverdue;
 }
 
 class _AppLocalizationsDelegate
