@@ -24,16 +24,13 @@ class CareTemplateItem {
   final int advanceNoticeDays;
   final bool selectedByDefault;
 
-  String title(AppLocalizations l) => switch (key) {
-    'rabies' => l.templateRabies,
-    'coreDog' => l.templateCoreVaccineDog,
-    'coreCat' => l.templateCoreVaccineCat,
-    _ => reminderTypeLabel(l, type),
-  };
+  String title(AppLocalizations l) =>
+      templateTitle(l, key) ?? reminderTypeLabel(l, type);
 
-  /// Saved as the reminder title only when it differs from the type label.
-  String storedTitle(AppLocalizations l) =>
-      title(l) == reminderTypeLabel(l, type) ? '' : title(l);
+  /// Stored on the reminder: a language-independent template marker
+  /// ("tpl:rabies") for named templates, otherwise empty (type label).
+  String get storedTitle =>
+      kNamedTemplateKeys.contains(key) ? '$kTemplateTitlePrefix$key' : '';
 }
 
 const _rabies = CareTemplateItem(

@@ -52,7 +52,8 @@ class LocalNotificationGateway implements NotificationGateway {
     }
     await _plugin.initialize(
       settings: const InitializationSettings(
-        android: AndroidInitializationSettings('@mipmap/ic_launcher'),
+        // Monochrome status-bar icon (res/drawable/ic_stat_paw.xml).
+        android: AndroidInitializationSettings('@drawable/ic_stat_paw'),
         iOS: DarwinInitializationSettings(
           requestAlertPermission: false,
           requestBadgePermission: false,

@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../core/database/app_database.dart';
 import '../../core/domain/enums.dart';
+import 'demo_data.dart';
 import '../../core/notifications/notification_gateway.dart';
 import '../../core/notifications/notification_status.dart';
 import '../../core/router/app_router.dart';
@@ -115,20 +117,26 @@ class SettingsScreen extends ConsumerWidget {
                     ? Icons.notifications_active_outlined
                     : Icons.notifications_off_outlined,
               ),
-              title: Text(status.enabled ? l10n.notifAllowed : l10n.notifBlocked),
+              title: Text(
+                status.enabled ? l10n.notifAllowed : l10n.notifBlocked,
+              ),
               onTap: status.enabled
                   ? null
                   : () => requestNotificationPermission(ref),
             ),
             ListTile(
               leading: Icon(
-                status.exact ? Icons.alarm_on_outlined : Icons.alarm_off_outlined,
+                status.exact
+                    ? Icons.alarm_on_outlined
+                    : Icons.alarm_off_outlined,
               ),
               title: Text(status.exact ? l10n.exactAllowed : l10n.exactBlocked),
               onTap: status.exact
                   ? null
                   : () async {
-                      await ref.read(notificationGatewayProvider).requestExact();
+                      await ref
+                          .read(notificationGatewayProvider)
+                          .requestExact();
                       ref.invalidate(notificationStatusProvider);
                     },
             ),
@@ -156,6 +164,15 @@ class SettingsScreen extends ConsumerWidget {
               value: ref.watch(isProProvider),
               onChanged: (v) =>
                   ref.read(isProProvider.notifier).setDebugUnlocked(v),
+            ),
+            // Not translated: only visible in debug builds.
+            ListTile(
+              leading: const Icon(Icons.science_outlined),
+              title: const Text('Developer: load demo data'),
+              onTap: () => loadDemoData(
+                ref.read(appDatabaseProvider),
+                chinese: l10n.localeName.startsWith('zh'),
+              ),
             ),
           ],
         ],
@@ -193,7 +210,8 @@ class SettingsScreen extends ConsumerWidget {
       title: l10n.settingsWeightUnit,
       options: options,
       current: (unit: ref.read(weightUnitSettingProvider)),
-      label: (o) => o.unit == null ? l10n.regionAuto : weightUnitSymbol(o.unit!),
+      label: (o) =>
+          o.unit == null ? l10n.regionAuto : weightUnitSymbol(o.unit!),
       keyOf: (o) => 'weightUnit.${o.unit?.name ?? 'auto'}',
     );
     if (picked != null) {
@@ -276,8 +294,9 @@ class _QuickLogPicker extends ConsumerWidget {
               secondary: Icon(recordIcon(t)),
               title: Text(recordTypeLabel(l10n, t)),
               value: selected.contains(t),
-              onChanged: (v) =>
-                  ref.read(quickLogTypesProvider.notifier).toggle(t, v ?? false),
+              onChanged: (v) => ref
+                  .read(quickLogTypesProvider.notifier)
+                  .toggle(t, v ?? false),
             ),
         ],
       ),

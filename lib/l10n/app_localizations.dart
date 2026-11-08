@@ -707,7 +707,7 @@ abstract class AppLocalizations {
   /// No description provided for @templatesIntro.
   ///
   /// In en, this message translates to:
-  /// **'Common care intervals for a {species} ({region}). Tick what applies and set each next due date.'**
+  /// **'Common care intervals ({species}, {region}). Tick the ones that apply and set each next due date.'**
   String templatesIntro(String species, String region);
 
   /// No description provided for @templatesDisclaimer.
@@ -1439,7 +1439,7 @@ abstract class AppLocalizations {
   /// No description provided for @backupIntro.
   ///
   /// In en, this message translates to:
-  /// **'Your data is stored only on this phone. Android also backs up records and settings to your Google account automatically (photos excluded). For a complete copy including photos, create a backup file and keep it somewhere safe.'**
+  /// **'Your data is stored only on this phone. If Google backup is on, Android also backs up records and settings to your Google account (photos excluded). For a complete copy including photos, create a backup file and keep it somewhere safe.'**
   String get backupIntro;
 
   /// No description provided for @backupCreateShare.

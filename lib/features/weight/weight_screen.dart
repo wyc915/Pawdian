@@ -139,6 +139,7 @@ class WeightChart extends StatelessWidget {
     final maxY = ys.reduce((a, b) => a > b ? a : b);
     final pad = ((maxY - minY) * 0.2).clamp(0.2, double.infinity);
     final spanDays = spots.last.x - spots.first.x;
+    final xInterval = spanDays <= 0 ? 1.0 : (spanDays / 4).ceilToDouble();
     final dateFormat = DateFormat.Md(localeName);
     return LineChart(
       LineChartData(
@@ -153,31 +154,48 @@ class WeightChart extends StatelessWidget {
             sideTitles: SideTitles(
               showTitles: true,
               reservedSize: 40,
-              getTitlesWidget: (value, meta) => SideTitleWidget(
-                meta: meta,
-                child: Text(
-                  value.toStringAsFixed(1),
-                  style: const TextStyle(fontSize: 11),
-                ),
-              ),
+              getTitlesWidget: (value, meta) {
+                // fl_chart always adds the axis min/max, which collide with
+                // the regular grid labels; show grid labels only.
+                if (value == meta.min || value == meta.max) {
+                  return const SizedBox.shrink();
+                }
+                return SideTitleWidget(
+                  meta: meta,
+                  child: Text(
+                    value.toStringAsFixed(1),
+                    style: const TextStyle(fontSize: 11),
+                  ),
+                );
+              },
             ),
           ),
           bottomTitles: AxisTitles(
             sideTitles: SideTitles(
               showTitles: true,
               reservedSize: 28,
-              interval: spanDays <= 0 ? 1 : (spanDays / 4).ceilToDouble(),
-              getTitlesWidget: (value, meta) => SideTitleWidget(
-                meta: meta,
-                child: Text(
-                  dateFormat.format(
-                    DateTime.fromMillisecondsSinceEpoch(
-                      (value * Duration.millisecondsPerDay).round(),
+              interval: xInterval,
+              getTitlesWidget: (value, meta) {
+                // Keep the first and last dates; drop grid labels that would
+                // crowd them.
+                final isEdge = value == meta.min || value == meta.max;
+                if (!isEdge &&
+                    (value - meta.min < xInterval * 0.6 ||
+                        meta.max - value < xInterval * 0.6)) {
+                  return const SizedBox.shrink();
+                }
+                return SideTitleWidget(
+                  meta: meta,
+                  child: Text(
+                    dateFormat.format(
+                      DateTime.fromMillisecondsSinceEpoch(
+                        (value * Duration.millisecondsPerDay).round(),
+                      ),
                     ),
+                    style: const TextStyle(fontSize: 11),
                   ),
-                  style: const TextStyle(fontSize: 11),
-                ),
-              ),
+                );
+              },
             ),
           ),
         ),

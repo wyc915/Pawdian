@@ -126,7 +126,7 @@
   "deleteReminderConfirm": "Delete this reminder?",
 
   "templatesTitle": "Suggested schedule",
-  "templatesIntro": "Common care intervals for a {species} ({region}). Tick what applies and set each next due date.",
+  "templatesIntro": "Common care intervals ({species}, {region}). Tick the ones that apply and set each next due date.",
   "@templatesIntro": { "placeholders": { "species": { "type": "String" }, "region": { "type": "String" } } },
   "templatesDisclaimer": "General guidance only, not medical advice. Follow your vet's instructions.",
   "templatesApply": "{count, plural, =0{Add reminders} =1{Add 1 reminder} other{Add {count} reminders}}",
@@ -270,7 +270,7 @@
 
   "settingsData": "Data",
   "backupTitle": "Backup & restore",
-  "backupIntro": "Your data is stored only on this phone. Android also backs up records and settings to your Google account automatically (photos excluded). For a complete copy including photos, create a backup file and keep it somewhere safe.",
+  "backupIntro": "Your data is stored only on this phone. If Google backup is on, Android also backs up records and settings to your Google account (photos excluded). For a complete copy including photos, create a backup file and keep it somewhere safe.",
   "backupCreateShare": "Create backup and share",
   "backupCreateSave": "Create backup and save to files",
   "backupRestore": "Restore from backup file",

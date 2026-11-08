@@ -41,6 +41,9 @@ class _ReminderFormScreenState extends ConsumerState<ReminderFormScreen> {
 
   bool get _isEdit => widget.ruleId != null;
 
+  /// Stored title before editing (may be a "tpl:" template marker).
+  String _originalTitle = '';
+
   @override
   void initState() {
     super.initState();
@@ -54,7 +57,10 @@ class _ReminderFormScreenState extends ConsumerState<ReminderFormScreen> {
       final rule = await ref.read(reminderRepositoryProvider).get(id);
       if (rule != null) {
         _type = rule.type;
-        _title.text = rule.title;
+        _originalTitle = rule.title;
+        if (mounted) {
+          _title.text = editableTitle(AppLocalizations.of(context), rule.title);
+        }
         _notes.text = rule.notes;
         _interval.text = '${rule.repeatInterval}';
         _date = rule.nextDueAt ?? rule.startDate;
@@ -113,7 +119,11 @@ class _ReminderFormScreenState extends ConsumerState<ReminderFormScreen> {
     // from it, so "next due date" is also the schedule's start.
     final draft = ReminderDraft(
       type: _type,
-      title: _title.text,
+      title: titleToStore(
+        AppLocalizations.of(context),
+        _originalTitle,
+        _title.text,
+      ),
       startDate: _date,
       times: _times,
       unit: _unit,
@@ -197,7 +207,10 @@ class _ReminderFormScreenState extends ConsumerState<ReminderFormScreen> {
                   trailing: const Icon(Icons.calendar_today),
                   onTap: _pickDate,
                 ),
-                Text(l.fieldTimes, style: Theme.of(context).textTheme.bodyLarge),
+                Text(
+                  l.fieldTimes,
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
                 const SizedBox(height: 8),
                 Wrap(
                   spacing: 8,

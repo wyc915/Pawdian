@@ -89,11 +89,41 @@ String regionLabel(AppLocalizations l, CareRegion r) => switch (r) {
   CareRegion.us => l.regionUs,
 };
 
+/// Reminder titles created from templates are stored as "tpl:KEY" so they
+/// follow the app language instead of the language at creation time.
+const kTemplateTitlePrefix = 'tpl:';
+const kNamedTemplateKeys = {'rabies', 'coreDog', 'coreCat'};
+
+String? templateTitle(AppLocalizations l, String key) => switch (key) {
+  'rabies' => l.templateRabies,
+  'coreDog' => l.templateCoreVaccineDog,
+  'coreCat' => l.templateCoreVaccineCat,
+  _ => null,
+};
+
 String reminderDisplayTitle(AppLocalizations l, ReminderRule rule) =>
-    rule.title.trim().isEmpty ? reminderTypeLabel(l, rule.type) : rule.title;
+    _displayTitle(l, rule.title) ?? reminderTypeLabel(l, rule.type);
+
+/// Text to show in an editable title field for [stored].
+String editableTitle(AppLocalizations l, String stored) =>
+    _displayTitle(l, stored) ?? '';
+
+/// Title to save from an edit field: keeps the language-independent template
+/// marker when the user did not change the text shown for it.
+String titleToStore(AppLocalizations l, String original, String edited) =>
+    edited.trim() == editableTitle(l, original) ? original : edited.trim();
+
+String? _displayTitle(AppLocalizations l, String stored) {
+  final t = stored.trim();
+  if (t.isEmpty) return null;
+  if (t.startsWith(kTemplateTitlePrefix)) {
+    return templateTitle(l, t.substring(kTemplateTitlePrefix.length));
+  }
+  return t;
+}
 
 String recordDisplayTitle(AppLocalizations l, CareRecord record) =>
-    record.title.trim().isEmpty ? recordTypeLabel(l, record.type) : record.title;
+    _displayTitle(l, record.title) ?? recordTypeLabel(l, record.type);
 
 /// Whole years and remaining months between [birth] and [now].
 (int years, int months) ageParts(DateTime birth, DateTime now) {

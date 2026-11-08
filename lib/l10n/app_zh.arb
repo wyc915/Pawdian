@@ -248,7 +248,7 @@
 
   "settingsData": "資料",
   "backupTitle": "備份與還原",
-  "backupIntro": "資料只存在這支手機上。Android 也會自動把紀錄和設定備份到你的 Google 帳號（不含照片）。若要包含照片的完整備份，請建立備份檔並存到安全的地方。",
+  "backupIntro": "資料只存在這支手機上。若手機已開啟 Google 備份，Android 也會自動把紀錄和設定備份到你的 Google 帳號（不含照片）。若要包含照片的完整備份，請建立備份檔並存到安全的地方。",
   "backupCreateShare": "建立備份並分享",
   "backupCreateSave": "建立備份並存到檔案",
   "backupRestore": "從備份檔還原",

@@ -100,7 +100,12 @@ class _RecordFormScreenState extends ConsumerState<RecordFormScreen> {
           onTap: () => _viewPhoto(image),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(8),
-            child: Image(image: image, width: 88, height: 88, fit: BoxFit.cover),
+            child: Image(
+              image: image,
+              width: 88,
+              height: 88,
+              fit: BoxFit.cover,
+            ),
           ),
         ),
         Positioned(
@@ -161,6 +166,9 @@ class _RecordFormScreenState extends ConsumerState<RecordFormScreen> {
 
   bool get _isEdit => widget.recordId != null;
 
+  /// Stored title before editing (may be a "tpl:" template marker).
+  String _originalTitle = '';
+
   @override
   void initState() {
     super.initState();
@@ -174,7 +182,10 @@ class _RecordFormScreenState extends ConsumerState<RecordFormScreen> {
       if (r != null) {
         _type = r.type;
         _occurredAt = r.occurredAt;
-        _title.text = r.title;
+        _originalTitle = r.title;
+        if (mounted) {
+          _title.text = editableTitle(AppLocalizations.of(context), r.title);
+        }
         _notes.text = r.notes;
         _severity = r.severity;
         _clinic.text = r.vetClinic;
@@ -206,7 +217,7 @@ class _RecordFormScreenState extends ConsumerState<RecordFormScreen> {
     final draft = RecordDraft(
       type: _type,
       occurredAt: _occurredAt,
-      title: _title.text,
+      title: titleToStore(l, _originalTitle, _title.text),
       notes: _notes.text,
       severity: _severity,
       vetClinic: _clinic.text,

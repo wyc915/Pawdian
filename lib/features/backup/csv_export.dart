@@ -48,7 +48,7 @@ String buildCsv({
             petNames[r.petId],
             _iso(r.occurredAt),
             recordTypeLabel(l, r.type),
-            r.title,
+            r.title.isEmpty ? '' : recordDisplayTitle(l, r),
             r.severity == null ? '' : severityLabel(l, r.severity),
             '',
             r.vetClinic,

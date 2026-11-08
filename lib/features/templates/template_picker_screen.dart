@@ -75,13 +75,12 @@ class _TemplatePickerState extends ConsumerState<_TemplatePicker> {
 
   Future<void> _apply() async {
     setState(() => _saving = true);
-    final l = AppLocalizations.of(context);
     final time = ref.read(defaultReminderTimeProvider);
     final drafts = [
       for (final c in _choices.where((c) => c.selected))
         ReminderDraft(
           type: c.item.type,
-          title: c.item.storedTitle(l),
+          title: c.item.storedTitle,
           startDate: c.date,
           times: [time],
           unit: c.item.unit,

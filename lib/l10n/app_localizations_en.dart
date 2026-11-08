@@ -388,7 +388,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String templatesIntro(String species, String region) {
-    return 'Common care intervals for a $species ($region). Tick what applies and set each next due date.';
+    return 'Common care intervals ($species, $region). Tick the ones that apply and set each next due date.';
   }
 
   @override
@@ -799,7 +799,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get backupIntro =>
-      'Your data is stored only on this phone. Android also backs up records and settings to your Google account automatically (photos excluded). For a complete copy including photos, create a backup file and keep it somewhere safe.';
+      'Your data is stored only on this phone. If Google backup is on, Android also backs up records and settings to your Google account (photos excluded). For a complete copy including photos, create a backup file and keep it somewhere safe.';
 
   @override
   String get backupCreateShare => 'Create backup and share';

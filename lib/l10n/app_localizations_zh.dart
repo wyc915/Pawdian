@@ -765,7 +765,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get backupIntro =>
-      '資料只存在這支手機上。Android 也會自動把紀錄和設定備份到你的 Google 帳號（不含照片）。若要包含照片的完整備份，請建立備份檔並存到安全的地方。';
+      '資料只存在這支手機上。若手機已開啟 Google 備份，Android 也會自動把紀錄和設定備份到你的 Google 帳號（不含照片）。若要包含照片的完整備份，請建立備份檔並存到安全的地方。';
 
   @override
   String get backupCreateShare => '建立備份並分享';
