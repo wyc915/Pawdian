@@ -105,6 +105,7 @@ class SettingsScreen extends ConsumerWidget {
             ),
             onTap: () => showModalBottomSheet<void>(
               context: context,
+              isScrollControlled: true,
               builder: (_) => const _QuickLogPicker(),
             ),
           ),
@@ -279,26 +280,54 @@ class _QuickLogPicker extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final selected = ref.watch(quickLogTypesProvider).toSet();
+    final notifier = ref.read(quickLogTypesProvider.notifier);
+    final order = notifier.order;
     return SafeArea(
-      child: ListView(
-        shrinkWrap: true,
-        children: [
-          ListTile(
-            title: Text(
-              l10n.settingsQuickLog,
-              style: Theme.of(context).textTheme.titleMedium,
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.sizeOf(context).height * 0.8,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              title: Text(
+                l10n.settingsQuickLog,
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              subtitle: Text(l10n.quickLogReorderHint),
             ),
-          ),
-          for (final t in kQuickLogTypes)
-            CheckboxListTile(
-              secondary: Icon(recordIcon(t)),
-              title: Text(recordTypeLabel(l10n, t)),
-              value: selected.contains(t),
-              onChanged: (v) => ref
-                  .read(quickLogTypesProvider.notifier)
-                  .toggle(t, v ?? false),
+            Flexible(
+              child: ReorderableListView(
+                shrinkWrap: true,
+                buildDefaultDragHandles: false,
+                onReorderItem: notifier.reorder,
+                children: [
+                  for (final (i, t) in order.indexed)
+                    ListTile(
+                      key: ValueKey(t),
+                      leading: Checkbox(
+                        value: selected.contains(t),
+                        onChanged: (v) => notifier.toggle(t, v ?? false),
+                      ),
+                      title: Row(
+                        children: [
+                          Icon(recordIcon(t), size: 20),
+                          const SizedBox(width: 12),
+                          Flexible(child: Text(recordTypeLabel(l10n, t))),
+                        ],
+                      ),
+                      onTap: () => notifier.toggle(t, !selected.contains(t)),
+                      trailing: ReorderableDragStartListener(
+                        index: i,
+                        child: const Icon(Icons.drag_handle),
+                      ),
+                    ),
+                ],
+              ),
             ),
-        ],
+          ],
+        ),
       ),
     );
   }

@@ -87,7 +87,7 @@ flutter:
 
   # Noto Sans TC (SIL OFL 1.1, see assets/fonts/OFL.txt) for Chinese in PDFs.
   assets:
-    - assets/fonts/NotoSansTC-Regular.ttf
+    - assets/fonts/NotoSansTC-Subset.ttf
 
   # To add assets to your application, add an assets section, like this:
   # assets:

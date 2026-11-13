@@ -61,9 +61,8 @@ Future<Uint8List> buildVetReport({
   final pet = data.pet;
 
   bool inRange(DateTime d) => !d.isBefore(data.from) && !d.isAfter(data.to);
-  final records =
-      data.records.where((r) => inRange(r.occurredAt)).toList()
-        ..sort((a, b) => b.occurredAt.compareTo(a.occurredAt));
+  final records = data.records.where((r) => inRange(r.occurredAt)).toList()
+    ..sort((a, b) => b.occurredAt.compareTo(a.occurredAt));
   final weights = data.weights.where((w) => inRange(w.measuredAt)).toList()
     ..sort((a, b) => a.measuredAt.compareTo(b.measuredAt));
 
@@ -75,10 +74,7 @@ Future<Uint8List> buildVetReport({
 
   pw.Widget heading(String text) => pw.Padding(
     padding: const pw.EdgeInsets.only(top: 14, bottom: 6),
-    child: pw.Text(
-      text,
-      style: pw.TextStyle(fontSize: 13, color: _brand),
-    ),
+    child: pw.Text(text, style: pw.TextStyle(fontSize: 13, color: _brand)),
   );
 
   pw.Widget none() => pw.Text(
@@ -86,47 +82,61 @@ Future<Uint8List> buildVetReport({
     style: const pw.TextStyle(fontSize: 10, color: _muted),
   );
 
-  pw.Widget table(List<List<String>> rows) => pw.TableHelper.fromTextArray(
-    headers: [l.reportColDate, l.reportColItem, l.reportColDetails],
-    data: rows,
-    headerStyle: const pw.TextStyle(fontSize: 10, color: PdfColors.white),
-    headerDecoration: const pw.BoxDecoration(color: _brand),
-    cellStyle: const pw.TextStyle(fontSize: 9.5),
-    columnWidths: {
-      0: const pw.FixedColumnWidth(95),
-      1: const pw.FixedColumnWidth(95),
-      2: const pw.FlexColumnWidth(),
-    },
-    cellAlignment: pw.Alignment.topLeft,
-  );
+  pw.Widget table(List<List<String>> rows, {bool withHeader = true}) =>
+      pw.TableHelper.fromTextArray(
+        headers: withHeader
+            ? [l.reportColDate, l.reportColItem, l.reportColDetails]
+            : null,
+        data: rows,
+        headerStyle: const pw.TextStyle(fontSize: 10, color: PdfColors.white),
+        headerDecoration: const pw.BoxDecoration(color: _brand),
+        cellStyle: const pw.TextStyle(fontSize: 9.5),
+        columnWidths: {
+          0: const pw.FixedColumnWidth(95),
+          1: const pw.FixedColumnWidth(95),
+          2: const pw.FlexColumnWidth(),
+        },
+        cellAlignment: pw.Alignment.topLeft,
+      );
 
   String details(CareRecord r) => [
     if (r.severity != null) severityLabel(l, r.severity),
     if (r.vetClinic.isNotEmpty) r.vetClinic,
     if (r.diagnosis.isNotEmpty) r.diagnosis,
-    if (r.cost != null) l.costLabel(NumberFormat.decimalPattern(l.localeName).format(r.cost)),
+    if (r.cost != null)
+      l.costLabel(NumberFormat.decimalPattern(l.localeName).format(r.cost)),
     if (r.notes.isNotEmpty) r.notes,
   ].join('\n');
 
-  pw.Widget section(String title, RecordCategory category) {
-    final rows = recordsForSection(records, category);
-    return pw.Column(
-      crossAxisAlignment: pw.CrossAxisAlignment.start,
-      children: [
-        heading(title),
-        if (rows.isEmpty)
-          none()
-        else
-          table([
-            for (final r in rows)
-              [
-                dateTimeFmt.format(r.occurredAt),
-                recordDisplayTitle(l, r),
-                details(r),
-              ],
-          ]),
-      ],
-    );
+  /// Widgets that must stay on the same page, e.g. a heading and the first
+  /// rows under it (a Column is never split by MultiPage).
+  pw.Widget together(List<pw.Widget> children) => pw.Column(
+    crossAxisAlignment: pw.CrossAxisAlignment.start,
+    children: children,
+  );
+
+  /// A heading with its first few rows kept together, then the remaining
+  /// rows as a table that MultiPage can split across pages.
+  List<pw.Widget> section(String title, RecordCategory category) {
+    final rows = [
+      for (final r in recordsForSection(records, category))
+        [
+          dateTimeFmt.format(r.occurredAt),
+          recordDisplayTitle(l, r),
+          details(r),
+        ],
+    ];
+    if (rows.isEmpty) {
+      return [
+        together([heading(title), none()]),
+      ];
+    }
+    const lead = 3;
+    return [
+      together([heading(title), table(rows.take(lead).toList())]),
+      if (rows.length > lead)
+        table(rows.skip(lead).toList(), withHeader: false),
+    ];
   }
 
   final profile = <(String, String)>[
@@ -163,9 +173,9 @@ Future<Uint8List> buildVetReport({
         grid: pw.CartesianGrid(
           xAxis: pw.FixedAxis(
             xTicks,
-            format: (v) => DateFormat.Md(
-              l.localeName,
-            ).format(first.add(Duration(hours: (v * 24).round()))),
+            format: (v) =>
+                DateFormat.Md(l.localeName)
+                    .format(first.add(Duration(hours: (v * 24).round()))),
             textStyle: const pw.TextStyle(fontSize: 8, color: _muted),
           ),
           yAxis: pw.FixedAxis(
@@ -228,36 +238,43 @@ Future<Uint8List> buildVetReport({
           '${l.reportPeriod(dateFmt.format(data.from), dateFmt.format(data.to))}',
           style: const pw.TextStyle(fontSize: 10, color: _muted),
         ),
-        heading(l.reportProfile),
-        pw.Table(
-          columnWidths: {
-            0: const pw.FixedColumnWidth(110),
-            1: const pw.FlexColumnWidth(),
-          },
-          children: [
-            for (final (k, v) in profile)
-              pw.TableRow(
-                children: [
-                  pw.Padding(
-                    padding: const pw.EdgeInsets.symmetric(vertical: 2),
-                    child: pw.Text(
-                      k,
-                      style: const pw.TextStyle(fontSize: 10, color: _muted),
+        together([
+          heading(l.reportProfile),
+          pw.Table(
+            columnWidths: {
+              0: const pw.FixedColumnWidth(110),
+              1: const pw.FlexColumnWidth(),
+            },
+            children: [
+              for (final (k, v) in profile)
+                pw.TableRow(
+                  children: [
+                    pw.Padding(
+                      padding: const pw.EdgeInsets.symmetric(vertical: 2),
+                      child: pw.Text(
+                        k,
+                        style: const pw.TextStyle(fontSize: 10, color: _muted),
+                      ),
                     ),
-                  ),
-                  pw.Padding(
-                    padding: const pw.EdgeInsets.symmetric(vertical: 2),
-                    child: pw.Text(v, style: const pw.TextStyle(fontSize: 10)),
-                  ),
-                ],
-              ),
-          ],
-        ),
-        heading(l.reportWeights),
+                    pw.Padding(
+                      padding: const pw.EdgeInsets.symmetric(vertical: 2),
+                      child: pw.Text(
+                        v,
+                        style: const pw.TextStyle(fontSize: 10),
+                      ),
+                    ),
+                  ],
+                ),
+            ],
+          ),
+        ]),
         if (weights.isEmpty)
-          none()
+          together([heading(l.reportWeights), none()])
         else ...[
-          if (weights.length >= 2) weightChart(),
+          together([
+            heading(l.reportWeights),
+            if (weights.length >= 2) weightChart(),
+          ]),
           pw.SizedBox(height: 6),
           pw.Wrap(
             spacing: 12,
@@ -271,10 +288,10 @@ Future<Uint8List> buildVetReport({
             ],
           ),
         ],
-        section(l.reportSymptoms, RecordCategory.symptom),
-        section(l.reportMedication, RecordCategory.medication),
-        section(l.reportVetVisits, RecordCategory.vet),
-        section(l.reportCare, RecordCategory.care),
+        ...section(l.reportSymptoms, RecordCategory.symptom),
+        ...section(l.reportMedication, RecordCategory.medication),
+        ...section(l.reportVetVisits, RecordCategory.vet),
+        ...section(l.reportCare, RecordCategory.care),
       ],
     ),
   );

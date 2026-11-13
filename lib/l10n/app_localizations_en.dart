@@ -702,6 +702,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsQuickLog => 'Quick log buttons';
 
   @override
+  String get quickLogReorderHint =>
+      'Tick the buttons to show. Drag the handle to change the order.';
+
+  @override
   String get timelineTitle => 'Timeline';
 
   @override

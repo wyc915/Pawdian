@@ -1256,6 +1256,12 @@ abstract class AppLocalizations {
   /// **'Quick log buttons'**
   String get settingsQuickLog;
 
+  /// No description provided for @quickLogReorderHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tick the buttons to show. Drag the handle to change the order.'**
+  String get quickLogReorderHint;
+
   /// No description provided for @timelineTitle.
   ///
   /// In en, this message translates to:

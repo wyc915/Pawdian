@@ -5,8 +5,18 @@ import '../../shared/l10n_labels.dart';
 /// One suggested reminder. Intervals are common general-practice guidance,
 /// NOT medical advice; the UI always shows a disclaimer.
 ///
-/// TODO(before launch): verify every interval against a published source
-/// (SPEC section 13, open items).
+/// Sources for every interval: docs/CARE_TEMPLATE_SOURCES.md (checked
+/// 2026-11). In short:
+/// - Rabies: yearly. Taiwan law (Animal Infectious Disease Control Act §13)
+///   requires a yearly dose; in the US 1- or 3-year vaccines exist and the
+///   interval follows the label and state law, so yearly is the safe default.
+/// - Core vaccines: Taiwan practice is yearly; in the US, AAHA (dogs) and
+///   AAHA/AAFP (cats) recommend every 3 years after the 1-year booster.
+/// - Heartworm, fleas and ticks: monthly, year-round (CAPC).
+/// - Intestinal worms: every 3 months (ESCCAP: at least 4 times a year). In
+///   the US monthly heartworm products usually cover them, so it is off by
+///   default there.
+/// - Check-up: yearly (AAHA/AVMA preventive care).
 class CareTemplateItem {
   const CareTemplateItem({
     required this.key,
@@ -105,7 +115,8 @@ List<CareTemplateItem> templatesFor(CareRegion region, Species species) =>
           key: 'coreDog',
           type: ReminderType.vaccine,
           unit: RepeatUnit.year,
-          advanceNoticeDays: 7,
+          interval: 3,
+          advanceNoticeDays: 14,
         ),
         _heartworm,
         _external,
@@ -125,7 +136,8 @@ List<CareTemplateItem> templatesFor(CareRegion region, Species species) =>
           key: 'coreCat',
           type: ReminderType.vaccine,
           unit: RepeatUnit.year,
-          advanceNoticeDays: 7,
+          interval: 3,
+          advanceNoticeDays: 14,
         ),
         _external,
         CareTemplateItem(
@@ -138,7 +150,10 @@ List<CareTemplateItem> templatesFor(CareRegion region, Species species) =>
         ),
         _checkup,
       ],
-      (_, Species.rabbit || Species.rodent || Species.bird || Species.reptile) =>
+      (
+        _,
+        Species.rabbit || Species.rodent || Species.bird || Species.reptile,
+      ) =>
         const [_checkup],
       _ => const [],
     };

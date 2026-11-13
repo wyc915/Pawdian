@@ -10,7 +10,7 @@ import '../records/data/record_repository.dart';
 import '../weight/data/weight_repository.dart';
 import 'report_builder.dart';
 
-const kReportFontAsset = 'assets/fonts/NotoSansTC-Regular.ttf';
+const kReportFontAsset = 'assets/fonts/NotoSansTC-Subset.ttf';
 
 final reportFontProvider = FutureProvider<ByteData>(
   (ref) => rootBundle.load(kReportFontAsset),
@@ -71,11 +71,7 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
                           pet: pet,
                           records: records,
                           weights: weights,
-                          from: DateTime(
-                            now.year,
-                            now.month,
-                            now.day - _days,
-                          ),
+                          from: DateTime(now.year, now.month, now.day - _days),
                           to: now,
                         ),
                         l: l,

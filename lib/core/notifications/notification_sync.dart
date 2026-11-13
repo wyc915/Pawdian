@@ -11,6 +11,7 @@ import '../../l10n/app_localizations.dart';
 import '../router/app_router.dart';
 import '../settings/app_language.dart';
 import '../widgets/home_widget_sync.dart';
+import 'background_actions.dart';
 import 'notification_gateway.dart';
 
 AppLocalizations currentLocalizations(Ref ref) {
@@ -71,19 +72,13 @@ class NotificationResponseHandler {
     final ruleId = response.payload;
     if (ruleId == null || ruleId.isEmpty) return;
     final repo = _ref.read(reminderRepositoryProvider);
-    final now = DateTime.now();
-    switch (response.actionId) {
-      case NotificationActions.done:
-        await repo.complete(ruleId);
-      case NotificationActions.snooze:
-        await repo.snooze(ruleId, now.add(const Duration(hours: 1)));
-      case NotificationActions.tomorrow:
-        await repo.snooze(ruleId, now.add(const Duration(days: 1)));
-      default:
-        final rule = await repo.get(ruleId);
-        if (rule != null) {
-          _ref.read(appRouterProvider).go(AppRoutes.pet(rule.petId));
-        }
+    // Buttons normally run in the background (background_actions.dart);
+    // this covers a tap, or a button on an older notification.
+    if (!await applyNotificationAction(repo, response.actionId, ruleId)) {
+      final rule = await repo.get(ruleId);
+      if (rule != null) {
+        _ref.read(appRouterProvider).go(AppRoutes.pet(rule.petId));
+      }
     }
     _ref.read(reminderSchedulerProvider).scheduleSoon();
   }

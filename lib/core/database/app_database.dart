@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sqlite3/common.dart' as sqlite;
 
 import '../domain/enums.dart';
 import 'tables.dart';
@@ -15,7 +16,18 @@ const kDatabaseFileName = 'pawdian.sqlite';
 )
 class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor])
-    : super(executor ?? driftDatabase(name: 'pawdian'));
+    : super(
+        executor ??
+            driftDatabase(
+              name: 'pawdian',
+              native: const DriftNativeOptions(setup: _setupConnection),
+            ),
+      );
+
+  /// Notification buttons write from a background isolate with their own
+  /// connection; wait for the other connection's lock instead of failing.
+  static void _setupConnection(sqlite.CommonDatabase db) =>
+      db.execute('PRAGMA busy_timeout = 5000');
 
   /// v1: pets, reminder_rules, care_records (M1)
   /// v2: weight_entries; care_records severity / vet fields (M2)

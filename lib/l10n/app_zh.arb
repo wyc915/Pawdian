@@ -215,6 +215,7 @@
   "deleteWeightConfirm": "要刪除這筆體重紀錄嗎？",
   "settingsWeightUnit": "體重單位",
   "settingsQuickLog": "快速記錄按鈕",
+  "quickLogReorderHint": "勾選要顯示的按鈕，拖曳右側把手調整順序。",
 
   "timelineTitle": "時間軸",
   "viewAll": "查看全部",

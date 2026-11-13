@@ -71,7 +71,7 @@ final effectiveWeightUnitProvider = Provider<WeightUnit>((ref) {
       weightUnitForCountry(PlatformDispatcher.instance.locale.countryCode);
 });
 
-/// Which quick-log buttons are shown (order follows [kQuickLogTypes]).
+/// Which quick-log buttons are shown, in the user's order.
 final quickLogTypesProvider =
     NotifierProvider<QuickLogTypesSetting, List<RecordType>>(
       QuickLogTypesSetting.new,
@@ -79,32 +79,63 @@ final quickLogTypesProvider =
 
 class QuickLogTypesSetting extends Notifier<List<RecordType>> {
   static const _key = 'quick_log_types';
+  static const _orderKey = 'quick_log_order';
+
+  static List<RecordType>? _parse(List<String>? names) => names
+      ?.map((n) => kQuickLogTypes.where((t) => t.name == n).firstOrNull)
+      .nonNulls
+      .toList();
+
+  /// Every quick-log type in the user's order; types added in later app
+  /// versions go at the end.
+  List<RecordType> get order {
+    final saved =
+        _parse(ref.read(sharedPreferencesProvider).getStringList(_orderKey)) ??
+        const [];
+    return [
+      ...saved.toSet(),
+      for (final t in kQuickLogTypes)
+        if (!saved.contains(t)) t,
+    ];
+  }
+
+  Set<RecordType> get _selected =>
+      _parse(ref.read(sharedPreferencesProvider).getStringList(_key))
+          ?.toSet() ??
+      kDefaultQuickLogTypes;
+
+  List<RecordType> _visible(Set<RecordType> selected) => [
+    for (final t in order)
+      if (selected.contains(t)) t,
+  ];
 
   @override
-  List<RecordType> build() {
-    final saved = ref.read(sharedPreferencesProvider).getStringList(_key);
-    final selected = saved == null
-        ? kDefaultQuickLogTypes
-        : saved
-              .map((n) => RecordType.values.where((t) => t.name == n).firstOrNull)
-              .nonNulls
-              .toSet();
-    return [for (final t in kQuickLogTypes) if (selected.contains(t)) t];
-  }
+  List<RecordType> build() => _visible(_selected);
 
   Future<void> toggle(RecordType type, bool enabled) async {
     final next = {...state};
     enabled ? next.add(type) : next.remove(type);
-    state = [for (final t in kQuickLogTypes) if (next.contains(t)) t];
-    await ref
-        .read(sharedPreferencesProvider)
-        .setStringList(_key, [for (final t in state) t.name]);
+    state = _visible(next);
+    await ref.read(sharedPreferencesProvider).setStringList(_key, [
+      for (final t in state) t.name,
+    ]);
+  }
+
+  /// Moves the item at [oldIndex] of [order] so it ends up at [newIndex].
+  Future<void> reorder(int oldIndex, int newIndex) async {
+    final next = order;
+    next.insert(newIndex, next.removeAt(oldIndex));
+    await ref.read(sharedPreferencesProvider).setStringList(_orderKey, [
+      for (final t in next) t.name,
+    ]);
+    state = _visible(state.toSet());
   }
 }
 
 /// Default time of day (minutes since midnight) for new reminders.
-final defaultReminderTimeProvider =
-    NotifierProvider<DefaultReminderTime, int>(DefaultReminderTime.new);
+final defaultReminderTimeProvider = NotifierProvider<DefaultReminderTime, int>(
+  DefaultReminderTime.new,
+);
 
 class DefaultReminderTime extends Notifier<int> {
   static const _key = 'default_reminder_minute';
@@ -121,7 +152,9 @@ class DefaultReminderTime extends Notifier<int> {
 /// Pro entitlement: true when Google Play reports an active Pro purchase
 /// (cached so it also works offline) or, in debug builds, when the developer
 /// switch is on. Purchases are verified on device; see BillingController.
-final isProProvider = NotifierProvider<ProEntitlement, bool>(ProEntitlement.new);
+final isProProvider = NotifierProvider<ProEntitlement, bool>(
+  ProEntitlement.new,
+);
 
 class ProEntitlement extends Notifier<bool> {
   static const _debugKey = 'debug_pro_unlocked';

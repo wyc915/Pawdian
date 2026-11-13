@@ -90,7 +90,7 @@ void main() {
         'store/icon-512.png',
       );
 
-      final font = await File('assets/fonts/NotoSansTC-Regular.ttf')
+      final font = await File('tool/font_source/NotoSansTC-Regular.ttf')
           .readAsBytes();
       final loader = FontLoader('BrandFont')
         ..addFont(Future.value(ByteData.sublistView(Uint8List.fromList(font))));

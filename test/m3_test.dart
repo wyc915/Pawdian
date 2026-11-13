@@ -404,7 +404,7 @@ void main() {
 
   test('vet report renders Chinese PDF and groups records', () async {
     final font = ByteData.sublistView(
-      await File('assets/fonts/NotoSansTC-Regular.ttf').readAsBytes(),
+      await File('assets/fonts/NotoSansTC-Subset.ttf').readAsBytes(),
     );
     final db = memoryDatabase();
     addTearDown(db.close);

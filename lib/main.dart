@@ -5,9 +5,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'app.dart';
 import 'core/billing/billing.dart';
+import 'core/notifications/background_actions.dart';
 import 'core/notifications/notification_gateway.dart';
 import 'core/notifications/notification_sync.dart';
 import 'core/settings/app_language.dart';
+import 'core/storage/file_cleanup.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,6 +26,7 @@ Future<void> main() async {
         container.read(notificationResponseHandlerProvider).handle(response),
   );
   final launch = await gateway.launchResponse();
+  listenForBackgroundChanges(container);
 
   runApp(
     UncontrolledProviderScope(container: container, child: const PawdianApp()),
@@ -39,5 +42,10 @@ Future<void> main() async {
     // Start listening for purchases (including ones finished while the app
     // was closed) and re-check Pro ownership with Google Play.
     container.read(billingControllerProvider).refresh();
+    // Housekeeping once things have settled: remove unused photo files.
+    Future<void>.delayed(
+      const Duration(seconds: 10),
+      () => container.read(fileCleanupProvider),
+    );
   });
 }

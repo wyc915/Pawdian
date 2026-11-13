@@ -236,6 +236,7 @@
   "deleteWeightConfirm": "Delete this weight entry?",
   "settingsWeightUnit": "Weight unit",
   "settingsQuickLog": "Quick log buttons",
+  "quickLogReorderHint": "Tick the buttons to show. Drag the handle to change the order.",
 
   "timelineTitle": "Timeline",
   "viewAll": "View all",

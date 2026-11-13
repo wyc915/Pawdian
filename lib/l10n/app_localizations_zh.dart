@@ -672,6 +672,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settingsQuickLog => '快速記錄按鈕';
 
   @override
+  String get quickLogReorderHint => '勾選要顯示的按鈕，拖曳右側把手調整順序。';
+
+  @override
   String get timelineTitle => '時間軸';
 
   @override

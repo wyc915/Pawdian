@@ -7,6 +7,7 @@ import 'package:timezone/timezone.dart' as tz;
 
 import '../../features/reminders/domain/notification_planner.dart';
 import '../../l10n/app_localizations.dart';
+import 'background_actions.dart';
 
 /// Notification action ids.
 abstract final class NotificationActions {
@@ -28,7 +29,10 @@ abstract class NotificationGateway {
   Future<void> requestExact();
 
   /// Replaces every pending notification with [planned].
-  Future<void> replaceAll(List<PlannedNotification> planned, AppLocalizations l);
+  Future<void> replaceAll(
+    List<PlannedNotification> planned,
+    AppLocalizations l,
+  );
 }
 
 class LocalNotificationGateway implements NotificationGateway {
@@ -61,6 +65,9 @@ class LocalNotificationGateway implements NotificationGateway {
         ),
       ),
       onDidReceiveNotificationResponse: onResponse,
+      // Buttons are handled without opening the app.
+      onDidReceiveBackgroundNotificationResponse:
+          onBackgroundNotificationResponse,
     );
   }
 
@@ -109,17 +116,17 @@ class LocalNotificationGateway implements NotificationGateway {
           AndroidNotificationAction(
             NotificationActions.done,
             l.notifActionDone,
-            showsUserInterface: true,
+            showsUserInterface: false,
           ),
           AndroidNotificationAction(
             NotificationActions.snooze,
             l.notifActionSnooze,
-            showsUserInterface: true,
+            showsUserInterface: false,
           ),
           AndroidNotificationAction(
             NotificationActions.tomorrow,
             l.notifActionTomorrow,
-            showsUserInterface: true,
+            showsUserInterface: false,
           ),
         ],
       ),
