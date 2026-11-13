@@ -15,6 +15,7 @@ import 'package:pawdian/core/database/app_database.dart';
 import 'package:pawdian/core/domain/enums.dart';
 import 'package:pawdian/core/settings/app_language.dart';
 import 'package:pawdian/core/settings/app_settings.dart';
+import 'package:pawdian/core/storage/photo_store.dart';
 import 'package:pawdian/core/widgets/home_widget_sync.dart';
 import 'package:pawdian/features/backup/backup_service.dart';
 import 'package:pawdian/features/backup/csv_export.dart';
@@ -26,6 +27,7 @@ import 'package:pawdian/features/report/report_builder.dart';
 import 'package:pawdian/features/weight/data/weight_repository.dart';
 import 'package:pawdian/l10n/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sqlite3/sqlite3.dart' show sqlite3;
 
 import 'helpers.dart';
 
@@ -44,25 +46,24 @@ void main() {
       final docsA = await Directory(p.join(tmp.path, 'a')).create();
       final docsB = await Directory(p.join(tmp.path, 'b')).create();
       await Directory(p.join(docsA.path, kPhotoDirName)).create();
-      await File(
-        p.join(docsA.path, kPhotoDirName, 'cat.jpg'),
-      ).writeAsBytes([1, 2, 3]);
+      await File(p.join(docsA.path, kPhotoDirName, 'cat.jpg'))
+          .writeAsBytes([1, 2, 3]);
 
       final db = memoryDatabase();
       final petId = await PetRepository(db).create(
         const PetsCompanion(name: Value('Mochi'), species: Value(Species.cat)),
       );
-      final recordId = await RecordRepository(db).quickLog(
-        petId,
-        RecordType.vomit,
-      );
+      final recordId = await RecordRepository(db)
+          .quickLog(petId, RecordType.vomit);
       await AttachmentRepository(db).add(recordId, 'lab.jpg');
-      await WeightRepository(
-        db,
-      ).add(petId, measuredAt: DateTime(2026, 11, 1), grams: 4200);
+      await WeightRepository(db)
+          .add(petId, measuredAt: DateTime(2026, 11, 1), grams: 4200);
 
       final serviceA = BackupService(documentsDir: docsA, tempDir: tmp);
-      final file = await serviceA.createBackup(db, now: DateTime(2026, 11, 9, 8, 5));
+      final file = await serviceA.createBackup(
+        db,
+        now: DateTime(2026, 11, 9, 8, 5),
+      );
       await db.close();
       expect(p.basename(file.path), 'Pawdian-backup-20261109-0805.pawdian');
 
@@ -81,18 +82,37 @@ void main() {
         ),
       );
       addTearDown(restored.close);
-      expect((await PetRepository(restored).watchAll().first).single.name, 'Mochi');
-      expect(await RecordRepository(restored).watchAll(petId).first, hasLength(1));
-      expect(await AttachmentRepository(restored).forRecord(recordId), hasLength(1));
-      expect(await WeightRepository(restored).watchForPet(petId).first, hasLength(1));
+      expect(
+        (await PetRepository(restored).watchAll().first).single.name,
+        'Mochi',
+      );
+      expect(
+        await RecordRepository(restored).watchAll(petId).first,
+        hasLength(1),
+      );
+      expect(
+        await AttachmentRepository(restored).forRecord(recordId),
+        hasLength(1),
+      );
+      expect(
+        await WeightRepository(restored).watchForPet(petId).first,
+        hasLength(1),
+      );
     });
 
     test('rejects other files and newer backups', () async {
       final service = BackupService(documentsDir: tmp, tempDir: tmp);
-      final notZip = await File(p.join(tmp.path, 'x.pawdian')).writeAsString('hi');
+      final notZip = await File(p.join(tmp.path, 'x.pawdian'))
+          .writeAsString('hi');
       await expectLater(
         service.readBackup(notZip, currentSchema: 3),
-        throwsA(isA<BackupException>().having((e) => e.reason, 'reason', BackupFailure.invalid)),
+        throwsA(
+          isA<BackupException>().having(
+            (e) => e.reason,
+            'reason',
+            BackupFailure.invalid,
+          ),
+        ),
       );
 
       Future<File> zipWith(Map<String, Object> manifest) async {
@@ -108,35 +128,248 @@ void main() {
           await zipWith({'app': 'other', 'format': 1, 'schemaVersion': 1}),
           currentSchema: 3,
         ),
-        throwsA(isA<BackupException>().having((e) => e.reason, 'reason', BackupFailure.invalid)),
+        throwsA(
+          isA<BackupException>().having(
+            (e) => e.reason,
+            'reason',
+            BackupFailure.invalid,
+          ),
+        ),
       );
       await expectLater(
         service.readBackup(
           await zipWith({'app': 'pawdian', 'format': 1, 'schemaVersion': 9}),
           currentSchema: 3,
         ),
-        throwsA(isA<BackupException>().having((e) => e.reason, 'reason', BackupFailure.tooNew)),
+        throwsA(
+          isA<BackupException>().having(
+            (e) => e.reason,
+            'reason',
+            BackupFailure.tooNew,
+          ),
+        ),
       );
     });
 
+    /// A real database file made by the app, for building test archives.
+    Future<Uint8List> validDatabaseBytes() async {
+      final db = memoryDatabase();
+      await PetRepository(db).create(
+        const PetsCompanion(name: Value('Mochi'), species: Value(Species.cat)),
+      );
+      final out = p.join(
+        tmp.path,
+        'valid-${DateTime.now().microsecondsSinceEpoch}.sqlite',
+      );
+      await db.customStatement('VACUUM INTO ?', [out]);
+      await db.close();
+      return File(out).readAsBytes();
+    }
+
+    Future<File> zipFile(String name, List<ArchiveFile> files) async {
+      final archive = Archive();
+      for (final f in files) {
+        archive.addFile(f);
+      }
+      return File(p.join(tmp.path, name))
+          .writeAsBytes(ZipEncoder().encode(archive));
+    }
+
+    ArchiveFile manifest() => ArchiveFile.string(
+      'manifest.json',
+      jsonEncode({'app': 'pawdian', 'format': 1, 'schemaVersion': 3}),
+    );
+
     test('ignores entries outside the photo folders', () async {
       final docs = await Directory(p.join(tmp.path, 'docs')).create();
-      final archive = Archive()
-        ..addFile(
-          ArchiveFile.string(
-            'manifest.json',
-            jsonEncode({'app': 'pawdian', 'format': 1, 'schemaVersion': 3}),
-          ),
-        )
-        ..addFile(ArchiveFile.bytes('database.sqlite', Uint8List(1)))
-        ..addFile(ArchiveFile.bytes('../evil.txt', Uint8List(1)))
-        ..addFile(ArchiveFile.bytes('pet_photos/../../evil2.txt', Uint8List(1)))
-        ..addFile(ArchiveFile.bytes('attachments/ok.jpg', Uint8List(1)));
-      await BackupService(documentsDir: docs, tempDir: tmp).applyBackup(archive);
+      final service = BackupService(documentsDir: docs, tempDir: tmp);
+      final file = await zipFile('evil.pawdian', [
+        manifest(),
+        ArchiveFile.bytes('database.sqlite', await validDatabaseBytes()),
+        ArchiveFile.bytes('../evil.txt', Uint8List(1)),
+        ArchiveFile.bytes('pet_photos/../../evil2.txt', Uint8List(1)),
+        ArchiveFile.bytes('pet_photos/..', Uint8List(1)),
+        ArchiveFile.bytes('attachments/ok.jpg', Uint8List(1)),
+      ]);
+      await service.applyBackup(
+        await service.readBackup(file, currentSchema: 3),
+      );
       expect(File(p.join(tmp.path, 'evil.txt')).existsSync(), isFalse);
       expect(File(p.join(tmp.path, 'evil2.txt')).existsSync(), isFalse);
-      expect(File(p.join(docs.path, 'attachments', 'ok.jpg')).existsSync(), isTrue);
+      expect(
+        File(p.join(docs.path, 'attachments', 'ok.jpg')).existsSync(),
+        isTrue,
+      );
+      expect(
+        Directory(p.join(docs.path, '.restore-staging')).existsSync(),
+        isFalse,
+      );
+      expect(
+        Directory(p.join(docs.path, '.restore-rollback')).existsSync(),
+        isFalse,
+      );
     });
+
+    test(
+      'rejects broken or foreign databases and keeps current data',
+      () async {
+        final docs = await Directory(p.join(tmp.path, 'docs')).create();
+        await File(p.join(docs.path, kDatabaseFileName))
+            .writeAsString('current');
+        final service = BackupService(documentsDir: docs, tempDir: tmp);
+
+        Future<void> expectInvalid(String name, Uint8List db) async {
+          final file = await zipFile(name, [
+            manifest(),
+            ArchiveFile.bytes('database.sqlite', db),
+          ]);
+          await expectLater(
+            service.readBackup(file, currentSchema: 3),
+            throwsA(
+              isA<BackupException>().having(
+                (e) => e.reason,
+                'reason',
+                BackupFailure.invalid,
+              ),
+            ),
+          );
+        }
+
+        // Not a database at all.
+        await expectInvalid(
+          'garbage.pawdian',
+          Uint8List.fromList(List.filled(4096, 7)),
+        );
+
+        // A database with a trigger that Pawdian never creates.
+        final valid = await validDatabaseBytes();
+        final withTrigger = File(p.join(tmp.path, 'trigger.sqlite'));
+        await withTrigger.writeAsBytes(valid);
+        final raw = sqlite3.open(withTrigger.path);
+        raw.execute(
+          'CREATE TRIGGER wipe AFTER INSERT ON care_records BEGIN DELETE FROM pets; END',
+        );
+        raw.close();
+        await expectInvalid('trigger.pawdian', await withTrigger.readAsBytes());
+
+        // A database from some other app.
+        final other = File(p.join(tmp.path, 'other.sqlite'));
+        final otherDb = sqlite3.open(other.path);
+        otherDb.execute(
+          'CREATE TABLE notes (id INTEGER); PRAGMA user_version = 1;',
+        );
+        otherDb.close();
+        await expectInvalid('other.pawdian', await other.readAsBytes());
+
+        // A database from a newer app version.
+        final newer = File(p.join(tmp.path, 'newer.sqlite'));
+        await newer.writeAsBytes(valid);
+        final newerDb = sqlite3.open(newer.path);
+        newerDb.userVersion = 9;
+        newerDb.close();
+        final newerFile = await zipFile('newer.pawdian', [
+          manifest(),
+          ArchiveFile.bytes('database.sqlite', await newer.readAsBytes()),
+        ]);
+        await expectLater(
+          service.readBackup(newerFile, currentSchema: 3),
+          throwsA(
+            isA<BackupException>().having(
+              (e) => e.reason,
+              'reason',
+              BackupFailure.tooNew,
+            ),
+          ),
+        );
+
+        // Nothing was touched.
+        expect(
+          await File(p.join(docs.path, kDatabaseFileName)).readAsString(),
+          'current',
+        );
+      },
+    );
+
+    test('rejects oversized entries (zip bomb)', () async {
+      final service = BackupService(documentsDir: tmp, tempDir: tmp);
+      // 300 MB of zeros compresses to a few hundred KB.
+      final bomb = ArchiveFile.bytes(
+        'pet_photos/big.jpg',
+        Uint8List(300 * 1024 * 1024),
+      );
+      final file = await zipFile('bomb.pawdian', [
+        manifest(),
+        ArchiveFile.bytes('database.sqlite', await validDatabaseBytes()),
+        bomb,
+      ]);
+      expect(await file.length(), lessThan(10 * 1024 * 1024));
+      await expectLater(
+        service.readBackup(file, currentSchema: 3),
+        throwsA(isA<BackupException>()),
+      );
+    });
+
+    test('photo store never touches files outside its folder', () async {
+      final folder = await Directory(p.join(tmp.path, 'photos')).create();
+      final outside = await File(p.join(tmp.path, 'secret.txt'))
+          .writeAsString('keep');
+      final store = PhotoStore(folder);
+      for (final bad in [
+        '../secret.txt',
+        '..',
+        '.',
+        '',
+        'a/b.jpg',
+        r'..\secret.txt',
+        'x\u0000.jpg',
+      ]) {
+        expect(PhotoStore.isSafeName(bad), isFalse, reason: bad);
+        expect(store.fileFor(bad), isNull, reason: bad);
+        await store.delete(bad);
+      }
+      expect(outside.existsSync(), isTrue);
+      expect(PhotoStore.isSafeName('3f1c-uuid.jpg'), isTrue);
+    });
+
+    test('old backup files are removed from the temp folder', () async {
+      final docs = await Directory(p.join(tmp.path, 'docs')).create();
+      final service = BackupService(documentsDir: docs, tempDir: tmp);
+      final db = memoryDatabase();
+      addTearDown(db.close);
+      final first = await service.createBackup(db, now: DateTime(2026, 1, 1));
+      final second = await service.createBackup(db, now: DateTime(2026, 1, 2));
+      expect(first.existsSync(), isFalse);
+      expect(second.existsSync(), isTrue);
+    });
+  });
+
+  test('CSV: formula-like text is neutralised', () async {
+    final db = memoryDatabase();
+    addTearDown(db.close);
+    final petId = await PetRepository(db).create(
+      const PetsCompanion(
+        name: Value('=cmd|calc'),
+        species: Value(Species.dog),
+      ),
+    );
+    await RecordRepository(db).create(
+      petId,
+      RecordDraft(
+        type: RecordType.vomit,
+        occurredAt: DateTime(2026, 11, 2, 9),
+        notes: '=HYPERLINK("http://x","y")',
+      ),
+    );
+    final csv = buildCsv(
+      pets: await PetRepository(db).watchAll().first,
+      records: await RecordRepository(db).watchAll(petId).first,
+      weights: const [],
+      l: en,
+      unit: WeightUnit.kg,
+    );
+    final row = csv.substring(1).trim().split('\r\n')[1];
+    expect(row, startsWith("'=cmd|calc,"));
+    expect(row, contains('"\'=HYPERLINK(""http://x"",""y"")"'));
   });
 
   test('CSV: BOM, escaping, chronological order', () async {
@@ -153,9 +386,8 @@ void main() {
         notes: 'ate grass, "twice"',
       ),
     );
-    await WeightRepository(
-      db,
-    ).add(petId, measuredAt: DateTime(2026, 11, 1), grams: 4200);
+    await WeightRepository(db)
+        .add(petId, measuredAt: DateTime(2026, 11, 1), grams: 4200);
     final csv = buildCsv(
       pets: await PetRepository(db).watchAll().first,
       records: await RecordRepository(db).watchAll(petId).first,
@@ -187,7 +419,11 @@ void main() {
     final now = DateTime(2026, 11, 9, 12);
     await records.create(
       petId,
-      RecordDraft(type: RecordType.vomit, occurredAt: now, severity: Severity.mild),
+      RecordDraft(
+        type: RecordType.vomit,
+        occurredAt: now,
+        severity: Severity.mild,
+      ),
     );
     await records.create(
       petId,
@@ -213,7 +449,10 @@ void main() {
 
     final all = await records.watchAll(petId).first;
     final symptoms = recordsForSection(all, RecordCategory.symptom);
-    expect(symptoms.map((r) => r.type).toSet(), {RecordType.vomit, RecordType.poop});
+    expect(symptoms.map((r) => r.type).toSet(), {
+      RecordType.vomit,
+      RecordType.poop,
+    });
     expect(recordsForSection(all, RecordCategory.vet), hasLength(1));
 
     final bytes = await buildVetReport(
@@ -251,7 +490,11 @@ void main() {
       ),
       now: now,
     );
-    var texts = nextReminderTexts(await reminders.watchSchedulable().first, now, en);
+    var texts = nextReminderTexts(
+      await reminders.watchSchedulable().first,
+      now,
+      en,
+    );
     expect(texts.title, 'Mochi: Vaccine');
     expect(texts.subtitle, contains('Nov 20'));
 
@@ -265,7 +508,11 @@ void main() {
       ),
       now: now,
     );
-    texts = nextReminderTexts(await reminders.watchSchedulable().first, now, en);
+    texts = nextReminderTexts(
+      await reminders.watchSchedulable().first,
+      now,
+      en,
+    );
     expect(texts.title, 'Mochi: Medication');
     expect(texts.subtitle, startsWith('Overdue'));
 

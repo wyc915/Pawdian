@@ -131,13 +131,14 @@ class _RecordFormScreenState extends ConsumerState<RecordFormScreen> {
           children: [
             if (store != null)
               for (final a in _existing)
-                thumb(
-                  FileImage(store.fileFor(a.fileName)),
-                  () => setState(() {
-                    _existing = [..._existing]..remove(a);
-                    _removed.add(a);
-                  }),
-                ),
+                if (store.fileFor(a.fileName) case final file?)
+                  thumb(
+                    FileImage(file),
+                    () => setState(() {
+                      _existing = [..._existing]..remove(a);
+                      _removed.add(a);
+                    }),
+                  ),
             for (final path in _pickedPaths)
               thumb(
                 FileImage(File(path)),

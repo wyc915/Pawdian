@@ -4,8 +4,13 @@ import '../../l10n/app_localizations.dart';
 import '../../shared/l10n_labels.dart';
 import '../../shared/units.dart';
 
+/// Text that spreadsheet apps would run as a formula (CSV injection), e.g. a
+/// note "=HYPERLINK(...)" coming from a restored backup.
+final _formulaStart = RegExp(r'^[=+\-@\t\r]');
+
 String _cell(Object? v) {
-  final s = v?.toString() ?? '';
+  var s = v?.toString() ?? '';
+  if (v is String && _formulaStart.hasMatch(s)) s = "'$s";
   if (s.contains(RegExp(r'[",\n\r]'))) return '"${s.replaceAll('"', '""')}"';
   return s;
 }

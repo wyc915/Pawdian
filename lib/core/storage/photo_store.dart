@@ -12,18 +12,30 @@ class PhotoStore {
 
   final Directory directory;
 
-  File fileFor(String name) => File(p.join(directory.path, name));
+  /// Whether [name] is a plain file name inside the folder. Names come from
+  /// the database, which a restored backup file controls, so anything with
+  /// a path separator or "." / ".." must never reach the file system.
+  static bool isSafeName(String name) =>
+      name.isNotEmpty &&
+      name.length <= 255 &&
+      !name.startsWith('.') &&
+      !name.contains(RegExp(r'[/\\\x00-\x1f]'));
+
+  /// The file for [name], or null if the name is not safe.
+  File? fileFor(String name) =>
+      isSafeName(name) ? File(p.join(directory.path, name)) : null;
 
   Future<String> importFile(String sourcePath) async {
-    final ext = p.extension(sourcePath).toLowerCase();
-    final name = '${const Uuid().v4()}${ext.isEmpty ? '.jpg' : ext}';
-    await File(sourcePath).copy(fileFor(name).path);
+    var ext = p.extension(sourcePath).toLowerCase();
+    if (!RegExp(r'^\.[a-z0-9]{1,5}$').hasMatch(ext)) ext = '.jpg';
+    final name = '${const Uuid().v4()}$ext';
+    await File(sourcePath).copy(p.join(directory.path, name));
     return name;
   }
 
   Future<void> delete(String name) async {
     final f = fileFor(name);
-    if (await f.exists()) await f.delete();
+    if (f != null && await f.exists()) await f.delete();
   }
 }
 

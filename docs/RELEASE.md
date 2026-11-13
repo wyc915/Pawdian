@@ -24,7 +24,7 @@
    ```
 3. 把 `upload-keystore.jks` 和密碼另外備份（例如密碼管理器 + 隨身碟）。
 
-沒有 `key.properties` 時，release 版會改用 debug 金鑰，只能在本機測試，Google Play 會拒收。
+沒有 `key.properties` 時，release 版 APK 會改用 debug 金鑰，只能在本機測試；`flutter build appbundle` 則會直接中止並提示先建立金鑰，避免誤傳 debug 簽署的上架檔。
 
 ## 2. 建置上架檔
 

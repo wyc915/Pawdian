@@ -66,6 +66,16 @@ android {
     }
 }
 
+// An app bundle is only built to upload to Google Play; never let one be
+// signed with the shared debug key by mistake.
+gradle.taskGraph.whenReady {
+    if (!hasReleaseKey && allTasks.any { it.name == "bundleRelease" }) {
+        throw GradleException(
+            "android/key.properties is missing: create the upload key first (docs/RELEASE.md).",
+        )
+    }
+}
+
 kotlin {
     compilerOptions {
         jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17

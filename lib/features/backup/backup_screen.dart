@@ -1,7 +1,7 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:archive/archive.dart' show Archive;
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -34,9 +34,8 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
     }
   }
 
-  void _snack(String text) => ScaffoldMessenger.of(
-    context,
-  ).showSnackBar(SnackBar(content: Text(text)));
+  void _snack(String text) =>
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(text)));
 
   Future<File> _create() async {
     final service = await ref.read(backupServiceProvider.future);
@@ -69,9 +68,9 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
     if (path == null || !mounted) return;
     final service = await ref.read(backupServiceProvider.future);
     final db = ref.read(appDatabaseProvider);
-    final Archive archive;
+    final ValidatedBackup backup;
     try {
-      archive = await service.readBackup(
+      backup = await service.readBackup(
         File(path),
         currentSchema: db.schemaVersion,
       );
@@ -80,17 +79,33 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
         e.reason == BackupFailure.tooNew ? l.backupTooNew : l.backupInvalid,
       );
       return;
+    } finally {
+      // file_picker keeps a copy of the picked file in the cache.
+      unawaited(FilePicker.clearTemporaryFiles().catchError((_) {}));
     }
-    if (!mounted) return;
+    if (!mounted) {
+      await backup.discard();
+      return;
+    }
     final ok = await confirmDialog(
       context,
       message: l.backupRestoreConfirm,
       confirmLabel: l.backupRestoreAction,
     );
-    if (!ok) return;
+    if (!ok) {
+      await backup.discard();
+      return;
+    }
     await _run(() async {
       await db.close();
-      await service.applyBackup(archive);
+      try {
+        await service.applyBackup(backup);
+      } catch (_) {
+        // applyBackup put the previous data back; reopen it.
+        ref.invalidate(appDatabaseProvider);
+        if (mounted) _snack(l.backupInvalid);
+        return;
+      }
       // Every repository depends on the database provider, so this reopens
       // (and migrates, if needed) the restored file everywhere.
       ref.invalidate(appDatabaseProvider);
@@ -139,8 +154,7 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
     final l = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final last = ref.watch(lastBackupProvider);
-    final stale =
-        last == null || DateTime.now().difference(last).inDays > 30;
+    final stale = last == null || DateTime.now().difference(last).inDays > 30;
     return Scaffold(
       appBar: AppBar(title: Text(l.backupTitle)),
       body: AbsorbPointer(
