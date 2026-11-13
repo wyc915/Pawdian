@@ -354,6 +354,8 @@ Services
 - [x] 快速記錄按鈕可拖曳排序
 - [x] 照護範本頻率查證，美國犬貓核心疫苗改為每 3 年（`docs/CARE_TEMPLATE_SOURCES.md`）
 - [x] Google Play 寵物類競品調查（`docs/COMPETITORS.md`）
+- [x] 視覺改版「溫暖療癒」風格（2026-11-13）：奶油色背景、主色綠搭配粉彩色系（每種紀錄類型與每隻寵物有固定顏色）、圓角卡片與暖色陰影、首頁問候語與「下一個提醒」大卡片、彩色快速記錄方塊、列表進場動畫與換頁轉場、完成時震動回饋、深色模式；主題集中在 `lib/core/theme/app_theme.dart`，共用元件在 `lib/shared/widgets/paw_card.dart`；商店截圖已重拍
+- [x] PDF 報告分頁修正：改用 Inseparable，區段標題不再單獨落在頁尾
 
 ### 13.2 需要負責人決定或處理
 - [ ] **商標查詢**：台灣智慧財產局、美國 USPTO（第 9、44 類）；網域 `pawdian.app` 或 `pawdian.com`

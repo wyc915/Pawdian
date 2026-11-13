@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/database/app_database.dart';
 import '../../core/router/app_router.dart';
 import '../../core/settings/app_settings.dart';
+import '../../core/theme/app_theme.dart';
 import '../../l10n/app_localizations.dart';
 import '../../shared/formatting.dart';
 import '../../shared/l10n_labels.dart';
 import '../../shared/widgets/empty_state.dart';
+import '../../shared/widgets/paw_card.dart';
 import '../../shared/widgets/pet_avatar.dart';
 import 'data/pet_repository.dart';
 
@@ -52,17 +55,15 @@ class PetsScreen extends ConsumerWidget {
           final active = list.where((p) => !p.isArchived).toList();
           final archived = list.where((p) => p.isArchived).toList();
           return ListView(
-            padding: const EdgeInsets.only(bottom: 96),
+            padding: const EdgeInsets.only(top: 4, bottom: 96),
             children: [
-              for (final pet in active) _PetTile(pet: pet),
+              for (final (i, pet) in active.indexed)
+                _PetTile(pet: pet)
+                    .animate()
+                    .fadeIn(delay: (50 * i).ms, duration: 300.ms)
+                    .slideY(begin: 0.08, curve: Curves.easeOutCubic),
               if (archived.isNotEmpty) ...[
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
-                  child: Text(
-                    l.petsArchivedSection,
-                    style: Theme.of(context).textTheme.titleSmall,
-                  ),
-                ),
+                SectionTitle(l.petsArchivedSection),
                 for (final pet in archived) _PetTile(pet: pet),
               ],
             ],
@@ -86,12 +87,39 @@ class _PetTile extends StatelessWidget {
       if (pet.breed.isNotEmpty) pet.breed,
       ?ageLabel(l, pet, DateTime.now()),
     ];
-    return ListTile(
-      leading: PetAvatar(pet: pet),
-      title: Text(pet.name),
-      subtitle: Text(parts.join(' · ')),
-      trailing: const Icon(Icons.chevron_right),
+    final p = context.paw;
+    return PawCard(
+      padding: const EdgeInsets.fromLTRB(12, 12, 8, 12),
       onTap: () => context.go(AppRoutes.pet(pet.id)),
+      child: Opacity(
+        opacity: pet.isArchived ? 0.6 : 1,
+        child: Row(
+          children: [
+            PetAvatar(pet: pet, radius: 28),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    pet.name,
+                    style: const TextStyle(
+                      fontSize: 17,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    parts.join(' · '),
+                    style: TextStyle(color: p.subtle, fontSize: 13.5),
+                  ),
+                ],
+              ),
+            ),
+            Icon(Icons.chevron_right_rounded, color: p.subtle),
+          ],
+        ),
+      ),
     );
   }
 }

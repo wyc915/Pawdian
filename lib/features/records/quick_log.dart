@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -6,6 +8,7 @@ import '../../core/database/app_database.dart';
 import '../../core/domain/enums.dart';
 import '../../core/router/app_router.dart';
 import '../../core/settings/app_settings.dart';
+import '../../core/theme/app_theme.dart';
 import '../../l10n/app_localizations.dart';
 import '../../shared/l10n_labels.dart';
 import '../../shared/widgets/pet_avatar.dart';
@@ -82,28 +85,87 @@ class QuickLogBar extends ConsumerWidget {
     if (pets.isEmpty) return const SizedBox.shrink();
     final l = AppLocalizations.of(context);
     final types = ref.watch(quickLogTypesProvider);
+    final p = context.paw;
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(l.quickLogTitle, style: Theme.of(context).textTheme.titleSmall),
-          const SizedBox(height: 8),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
+      padding: const EdgeInsets.fromLTRB(16, 4, 16, 4),
+      child: LayoutBuilder(
+        builder: (context, c) {
+          // 4 tiles per row on phones, more on wide screens.
+          final perRow = (c.maxWidth / 86).floor().clamp(3, 8);
+          const gap = 8.0;
+          final w = (c.maxWidth - gap * (perRow - 1)) / perRow;
+          return Wrap(
+            spacing: gap,
+            runSpacing: gap,
             children: [
-              for (final t in types)
-                ActionChip(
-                  key: Key('quickLog.${t.name}'),
-                  avatar: Icon(recordIcon(t), size: 18),
-                  label: Text(recordTypeLabel(l, t)),
-                  onPressed: () => quickLog(context, ref, t, pets),
-                ),
+              for (final (i, t) in types.indexed)
+                SizedBox(
+                      width: w,
+                      child: _QuickTile(
+                        key: Key('quickLog.${t.name}'),
+                        icon: recordIcon(t),
+                        label: recordTypeLabel(l, t),
+                        tone: p.recordTone(t),
+                        onTap: () => quickLog(context, ref, t, pets),
+                      ),
+                    )
+                    .animate()
+                    .fadeIn(delay: (30 * i).ms, duration: 250.ms)
+                    .scale(
+                      begin: const Offset(0.92, 0.92),
+                      curve: Curves.easeOutBack,
+                    ),
             ],
-          ),
-        ],
+          );
+        },
       ),
     );
   }
+}
+
+class _QuickTile extends StatelessWidget {
+  const _QuickTile({
+    super.key,
+    required this.icon,
+    required this.label,
+    required this.tone,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String label;
+  final Tone tone;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) => Material(
+    color: tone.bg,
+    borderRadius: BorderRadius.circular(PawRadius.tile),
+    child: InkWell(
+      borderRadius: BorderRadius.circular(PawRadius.tile),
+      onTap: () {
+        HapticFeedback.lightImpact();
+        onTap();
+      },
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
+        child: Column(
+          children: [
+            Icon(icon, color: tone.fg, size: 26),
+            const SizedBox(height: 4),
+            Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                color: tone.fg,
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
 }

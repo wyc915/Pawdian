@@ -109,10 +109,13 @@ Future<Uint8List> buildVetReport({
   ].join('\n');
 
   /// Widgets that must stay on the same page, e.g. a heading and the first
-  /// rows under it (a Column is never split by MultiPage).
-  pw.Widget together(List<pw.Widget> children) => pw.Column(
-    crossAxisAlignment: pw.CrossAxisAlignment.start,
-    children: children,
+  /// rows under it. A plain Column can be split by MultiPage; Inseparable
+  /// moves the whole group to the next page instead.
+  pw.Widget together(List<pw.Widget> children) => pw.Inseparable(
+    child: pw.Column(
+      crossAxisAlignment: pw.CrossAxisAlignment.start,
+      children: children,
+    ),
   );
 
   /// A heading with its first few rows kept together, then the remaining

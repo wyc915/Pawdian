@@ -1,6 +1,10 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../../core/theme/app_theme.dart';
+import '../../shared/widgets/paw_card.dart';
+
 import 'package:intl/intl.dart';
 
 import '../../core/database/app_database.dart';
@@ -95,22 +99,37 @@ class _WeightScreenState extends ConsumerState<WeightScreen> {
                   : WeightChart(entries: shown, unit: unit),
             ),
           ),
-          const Divider(),
-          for (final w in all.reversed)
-            ListTile(
-              leading: const Icon(Icons.monitor_weight_outlined),
-              title: Text(formatWeight(w.grams, unit)),
-              subtitle: Text(
-                [
-                  formatDate(context, w.measuredAt),
-                  if (w.notes.isNotEmpty) w.notes,
-                ].join(' · '),
-              ),
-              onTap: () => showWeightDialog(
-                context,
-                ref,
-                petId: widget.petId,
-                existing: w,
+          if (all.isNotEmpty)
+            PawCard(
+              margin: const EdgeInsets.fromLTRB(16, 8, 16, 96),
+              padding: const EdgeInsets.symmetric(vertical: 4),
+              child: Column(
+                children: [
+                  for (final w in all.reversed)
+                    ListTile(
+                      leading: ToneIcon(
+                        icon: Icons.monitor_weight_outlined,
+                        tone: context.paw.sky,
+                        size: 40,
+                      ),
+                      title: Text(
+                        formatWeight(w.grams, unit),
+                        style: const TextStyle(fontWeight: FontWeight.w600),
+                      ),
+                      subtitle: Text(
+                        [
+                          formatDate(context, w.measuredAt),
+                          if (w.notes.isNotEmpty) w.notes,
+                        ].join(' · '),
+                      ),
+                      onTap: () => showWeightDialog(
+                        context,
+                        ref,
+                        petId: widget.petId,
+                        existing: w,
+                      ),
+                    ),
+                ],
               ),
             ),
         ],
@@ -130,7 +149,8 @@ class WeightChart extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     final localeName = AppLocalizations.of(context).localeName;
-    double x(DateTime d) => d.millisecondsSinceEpoch / Duration.millisecondsPerDay;
+    double x(DateTime d) =>
+        d.millisecondsSinceEpoch / Duration.millisecondsPerDay;
     final spots = [
       for (final e in entries) FlSpot(x(e.measuredAt), unit.fromGrams(e.grams)),
     ];

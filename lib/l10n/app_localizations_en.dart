@@ -65,6 +65,33 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeToday => 'Today';
 
   @override
+  String get homeGreetingMorning => 'Good morning';
+
+  @override
+  String get homeGreetingAfternoon => 'Good afternoon';
+
+  @override
+  String get homeGreetingEvening => 'Good evening';
+
+  @override
+  String homeTasksToday(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count things to do today',
+      one: '1 thing to do today',
+      zero: 'Nothing to do today',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get homeUpNext => 'Up next';
+
+  @override
+  String get homeTomorrow => 'Tomorrow';
+
+  @override
   String get homeUpcoming => 'Next 7 days';
 
   @override

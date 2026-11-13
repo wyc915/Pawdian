@@ -206,6 +206,42 @@ abstract class AppLocalizations {
   /// **'Today'**
   String get homeToday;
 
+  /// No description provided for @homeGreetingMorning.
+  ///
+  /// In en, this message translates to:
+  /// **'Good morning'**
+  String get homeGreetingMorning;
+
+  /// No description provided for @homeGreetingAfternoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Good afternoon'**
+  String get homeGreetingAfternoon;
+
+  /// No description provided for @homeGreetingEvening.
+  ///
+  /// In en, this message translates to:
+  /// **'Good evening'**
+  String get homeGreetingEvening;
+
+  /// No description provided for @homeTasksToday.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{Nothing to do today} =1{1 thing to do today} other{{count} things to do today}}'**
+  String homeTasksToday(num count);
+
+  /// No description provided for @homeUpNext.
+  ///
+  /// In en, this message translates to:
+  /// **'Up next'**
+  String get homeUpNext;
+
+  /// No description provided for @homeTomorrow.
+  ///
+  /// In en, this message translates to:
+  /// **'Tomorrow'**
+  String get homeTomorrow;
+
   /// No description provided for @homeUpcoming.
   ///
   /// In en, this message translates to:

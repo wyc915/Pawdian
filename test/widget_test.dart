@@ -99,7 +99,8 @@ void main() {
     // Everything starts today, so the home screen lists it.
     await tester.tap(find.text('Home').last);
     await tester.pumpAndSettle();
-    expect(find.textContaining('Mochi · Rabies vaccine'), findsOneWidget);
+    // Shown in the "up next" card and in the list.
+    expect(find.textContaining('Mochi · Rabies vaccine'), findsWidgets);
 
     await tester.tap(find.byTooltip('Done').first);
     await tester.pumpAndSettle();

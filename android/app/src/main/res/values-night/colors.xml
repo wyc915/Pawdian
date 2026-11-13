@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Home screen widget in dark mode. -->
-    <color name="widget_background">#FF1C2A26</color>
-    <color name="widget_title">#FFE0F2EC</color>
-    <color name="widget_accent">#FF8FD3BF</color>
+    <color name="widget_background">#FF241D18</color>
+    <color name="widget_title">#FFF3E9DF</color>
+    <color name="widget_accent">#FF6FC7AE</color>
 </resources>

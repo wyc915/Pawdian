@@ -2,7 +2,7 @@
 <resources>
     <color name="ic_launcher_background">#2E7D6B</color>
     <!-- Home screen widget, matching the app's teal theme (light). -->
-    <color name="widget_background">#FFE6F4EF</color>
-    <color name="widget_title">#FF1B3A33</color>
+    <color name="widget_background">#FFFBF6EF</color>
+    <color name="widget_title">#FF3A2A20</color>
     <color name="widget_accent">#FF2E7D6B</color>
 </resources>

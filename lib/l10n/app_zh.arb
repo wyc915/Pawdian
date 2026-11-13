@@ -21,6 +21,12 @@
   "homeEmptyBody": "未來 7 天沒有提醒。",
   "homeOverdue": "已逾期",
   "homeToday": "今天",
+  "homeGreetingMorning": "早安",
+  "homeGreetingAfternoon": "午安",
+  "homeGreetingEvening": "晚安",
+  "homeTasksToday": "{count, plural, =0{今天沒有待辦事項} other{今天有 {count} 件事}}",
+  "homeUpNext": "下一個提醒",
+  "homeTomorrow": "明天",
   "homeUpcoming": "未來 7 天",
   "reminderCompletedSnack": "已完成「{title}」",
 

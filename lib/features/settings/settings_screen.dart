@@ -1,6 +1,10 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../../core/theme/app_theme.dart';
+import '../../shared/widgets/paw_card.dart';
+
 import 'package:go_router/go_router.dart';
 
 import '../../core/database/app_database.dart';
@@ -30,152 +34,191 @@ class SettingsScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(title: Text(l10n.navSettings)),
       body: ListView(
+        padding: const EdgeInsets.only(bottom: 32),
         children: [
-          ListTile(
+          PawCard(
             key: const Key('settings.pro'),
-            leading: Icon(
-              Icons.workspace_premium_outlined,
-              color: Theme.of(context).colorScheme.primary,
-            ),
-            title: Text(l10n.settingsPro),
-            subtitle: Text(
-              ref.watch(isProProvider)
-                  ? l10n.settingsProActive
-                  : l10n.settingsProFree,
-            ),
-            trailing: const Icon(Icons.chevron_right),
+            color: context.paw.butter.bg,
+            padding: const EdgeInsets.fromLTRB(14, 14, 10, 14),
             onTap: () => context.go(AppRoutes.pro),
-          ),
-          const Divider(),
-          ListTile(
-            key: const Key('settings.language'),
-            leading: const Icon(Icons.language),
-            title: Text(l10n.settingsLanguage),
-            subtitle: Text(languageLabel(l10n, language)),
-            onTap: () => _pickLanguage(context, ref, language),
-          ),
-          ListTile(
-            leading: const Icon(Icons.public),
-            title: Text(l10n.settingsRegion),
-            subtitle: Text(
-              regionSetting == null
-                  ? '${l10n.regionAuto} (${regionLabel(l10n, ref.watch(effectiveCareRegionProvider))})'
-                  : regionLabel(l10n, regionSetting),
-            ),
-            onTap: () => _pickRegion(context, ref, regionSetting),
-          ),
-          ListTile(
-            leading: const Icon(Icons.schedule),
-            title: Text(l10n.settingsDefaultTime),
-            subtitle: Text(formatMinute(context, defaultTime)),
-            onTap: () async {
-              final picked = await showTimePicker(
-                context: context,
-                initialTime: TimeOfDay(
-                  hour: defaultTime ~/ 60,
-                  minute: defaultTime % 60,
+            child: Row(
+              children: [
+                ToneIcon(
+                  icon: Icons.workspace_premium_outlined,
+                  tone: Tone(context.paw.card, context.paw.butter.fg),
+                  size: 44,
                 ),
-              );
-              if (picked != null) {
-                await ref
-                    .read(defaultReminderTimeProvider.notifier)
-                    .set(picked.hour * 60 + picked.minute);
-              }
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.monitor_weight_outlined),
-            title: Text(l10n.settingsWeightUnit),
-            subtitle: Text(
-              ref.watch(weightUnitSettingProvider) == null
-                  ? '${l10n.regionAuto} (${weightUnitSymbol(ref.watch(effectiveWeightUnitProvider))})'
-                  : weightUnitSymbol(ref.watch(weightUnitSettingProvider)!),
-            ),
-            onTap: () => _pickWeightUnit(context, ref),
-          ),
-          ListTile(
-            key: const Key('settings.quickLog'),
-            leading: const Icon(Icons.bolt_outlined),
-            title: Text(l10n.settingsQuickLog),
-            subtitle: Text(
-              ref
-                  .watch(quickLogTypesProvider)
-                  .map((t) => recordTypeLabel(l10n, t))
-                  .join(l10n.localeName.startsWith('zh') ? '、' : ', '),
-            ),
-            onTap: () => showModalBottomSheet<void>(
-              context: context,
-              isScrollControlled: true,
-              builder: (_) => const _QuickLogPicker(),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        l10n.settingsPro,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: context.paw.butter.fg,
+                        ),
+                      ),
+                      Text(
+                        ref.watch(isProProvider)
+                            ? l10n.settingsProActive
+                            : l10n.settingsProFree,
+                        style: TextStyle(
+                          color: context.paw.butter.fg.withValues(alpha: 0.8),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Icon(Icons.chevron_right_rounded, color: context.paw.butter.fg),
+              ],
             ),
           ),
-          const Divider(),
+          _Group(
+            children: [
+              ListTile(
+                key: const Key('settings.language'),
+                leading: const Icon(Icons.language),
+                title: Text(l10n.settingsLanguage),
+                subtitle: Text(languageLabel(l10n, language)),
+                onTap: () => _pickLanguage(context, ref, language),
+              ),
+              ListTile(
+                leading: const Icon(Icons.public),
+                title: Text(l10n.settingsRegion),
+                subtitle: Text(
+                  regionSetting == null
+                      ? '${l10n.regionAuto} (${regionLabel(l10n, ref.watch(effectiveCareRegionProvider))})'
+                      : regionLabel(l10n, regionSetting),
+                ),
+                onTap: () => _pickRegion(context, ref, regionSetting),
+              ),
+              ListTile(
+                leading: const Icon(Icons.schedule),
+                title: Text(l10n.settingsDefaultTime),
+                subtitle: Text(formatMinute(context, defaultTime)),
+                onTap: () async {
+                  final picked = await showTimePicker(
+                    context: context,
+                    initialTime: TimeOfDay(
+                      hour: defaultTime ~/ 60,
+                      minute: defaultTime % 60,
+                    ),
+                  );
+                  if (picked != null) {
+                    await ref
+                        .read(defaultReminderTimeProvider.notifier)
+                        .set(picked.hour * 60 + picked.minute);
+                  }
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.monitor_weight_outlined),
+                title: Text(l10n.settingsWeightUnit),
+                subtitle: Text(
+                  ref.watch(weightUnitSettingProvider) == null
+                      ? '${l10n.regionAuto} (${weightUnitSymbol(ref.watch(effectiveWeightUnitProvider))})'
+                      : weightUnitSymbol(ref.watch(weightUnitSettingProvider)!),
+                ),
+                onTap: () => _pickWeightUnit(context, ref),
+              ),
+              ListTile(
+                key: const Key('settings.quickLog'),
+                leading: const Icon(Icons.bolt_outlined),
+                title: Text(l10n.settingsQuickLog),
+                subtitle: Text(
+                  ref
+                      .watch(quickLogTypesProvider)
+                      .map((t) => recordTypeLabel(l10n, t))
+                      .join(l10n.localeName.startsWith('zh') ? '、' : ', '),
+                ),
+                onTap: () => showModalBottomSheet<void>(
+                  context: context,
+                  isScrollControlled: true,
+                  builder: (_) => const _QuickLogPicker(),
+                ),
+              ),
+            ],
+          ),
           _SectionHeader(l10n.settingsNotifications),
-          if (status != null) ...[
-            ListTile(
-              leading: Icon(
-                status.enabled
-                    ? Icons.notifications_active_outlined
-                    : Icons.notifications_off_outlined,
+          _Group(
+            children: [
+              if (status != null) ...[
+                ListTile(
+                  leading: Icon(
+                    status.enabled
+                        ? Icons.notifications_active_outlined
+                        : Icons.notifications_off_outlined,
+                  ),
+                  title: Text(
+                    status.enabled ? l10n.notifAllowed : l10n.notifBlocked,
+                  ),
+                  onTap: status.enabled
+                      ? null
+                      : () => requestNotificationPermission(ref),
+                ),
+                ListTile(
+                  leading: Icon(
+                    status.exact
+                        ? Icons.alarm_on_outlined
+                        : Icons.alarm_off_outlined,
+                  ),
+                  title: Text(
+                    status.exact ? l10n.exactAllowed : l10n.exactBlocked,
+                  ),
+                  onTap: status.exact
+                      ? null
+                      : () async {
+                          await ref
+                              .read(notificationGatewayProvider)
+                              .requestExact();
+                          ref.invalidate(notificationStatusProvider);
+                        },
+                ),
+              ],
+              ListTile(
+                leading: const Icon(Icons.help_outline),
+                title: Text(l10n.reminderHelpTitle),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => context.go(AppRoutes.reminderHelp),
               ),
-              title: Text(
-                status.enabled ? l10n.notifAllowed : l10n.notifBlocked,
-              ),
-              onTap: status.enabled
-                  ? null
-                  : () => requestNotificationPermission(ref),
-            ),
-            ListTile(
-              leading: Icon(
-                status.exact
-                    ? Icons.alarm_on_outlined
-                    : Icons.alarm_off_outlined,
-              ),
-              title: Text(status.exact ? l10n.exactAllowed : l10n.exactBlocked),
-              onTap: status.exact
-                  ? null
-                  : () async {
-                      await ref
-                          .read(notificationGatewayProvider)
-                          .requestExact();
-                      ref.invalidate(notificationStatusProvider);
-                    },
-            ),
-          ],
-          ListTile(
-            leading: const Icon(Icons.help_outline),
-            title: Text(l10n.reminderHelpTitle),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: () => context.go(AppRoutes.reminderHelp),
+            ],
           ),
-          const Divider(),
           _SectionHeader(l10n.settingsData),
-          ListTile(
-            key: const Key('settings.backup'),
-            leading: const Icon(Icons.backup_outlined),
-            title: Text(l10n.backupTitle),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: () => context.go(AppRoutes.backup),
-          ),
-          if (kDebugMode) ...[
-            const Divider(),
-            SwitchListTile(
-              secondary: const Icon(Icons.bug_report_outlined),
-              title: Text(l10n.debugPro),
-              value: ref.watch(isProProvider),
-              onChanged: (v) =>
-                  ref.read(isProProvider.notifier).setDebugUnlocked(v),
-            ),
-            // Not translated: only visible in debug builds.
-            ListTile(
-              leading: const Icon(Icons.science_outlined),
-              title: const Text('Developer: load demo data'),
-              onTap: () => loadDemoData(
-                ref.read(appDatabaseProvider),
-                chinese: l10n.localeName.startsWith('zh'),
+          _Group(
+            children: [
+              ListTile(
+                key: const Key('settings.backup'),
+                leading: const Icon(Icons.backup_outlined),
+                title: Text(l10n.backupTitle),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => context.go(AppRoutes.backup),
               ),
+            ],
+          ),
+          if (kDebugMode)
+            _Group(
+              children: [
+                SwitchListTile(
+                  secondary: const Icon(Icons.bug_report_outlined),
+                  title: Text(l10n.debugPro),
+                  value: ref.watch(isProProvider),
+                  onChanged: (v) =>
+                      ref.read(isProProvider.notifier).setDebugUnlocked(v),
+                ),
+                // Not translated: only visible in debug builds.
+                ListTile(
+                  leading: const Icon(Icons.science_outlined),
+                  title: const Text('Developer: load demo data'),
+                  onTap: () => loadDemoData(
+                    ref.read(appDatabaseProvider),
+                    chinese: l10n.localeName.startsWith('zh'),
+                  ),
+                ),
+              ],
             ),
-          ],
         ],
       ),
     );
@@ -339,9 +382,22 @@ class _SectionHeader extends StatelessWidget {
   final String text;
 
   @override
-  Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-    child: Text(text, style: Theme.of(context).textTheme.titleSmall),
+  Widget build(BuildContext context) => SectionTitle(text);
+}
+
+/// A card holding a group of settings rows.
+class _Group extends StatelessWidget {
+  const _Group({required this.children});
+
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) => PawCard(
+    padding: const EdgeInsets.symmetric(vertical: 4),
+    child: ListTileTheme.merge(
+      iconColor: context.paw.brand,
+      child: Column(children: children),
+    ),
   );
 }
 

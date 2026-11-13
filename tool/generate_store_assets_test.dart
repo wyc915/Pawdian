@@ -115,7 +115,7 @@ void main() {
             const Offset(450, 120),
           );
           c.drawParagraph(
-            text('毛孩守護', 64, const Color(0xFFE6F4EF)),
+            text('毛孩守護', 64, const Color(0xFFFBF6EF)),
             const Offset(454, 235),
           );
           c.drawParagraph(
@@ -142,7 +142,7 @@ void main() {
         final h = src.height;
         final w = src.width < (h / 2).ceil() ? (h / 2).ceil() : src.width;
         final padded = await _draw(w, h, (c, s) {
-          c.drawRect(Offset.zero & s, Paint()..color = const Color(0xFFE6F4EF));
+          c.drawRect(Offset.zero & s, Paint()..color = const Color(0xFFFBF6EF));
           c.drawImage(
             src,
             Offset(((w - src.width) / 2).floorToDouble(), 0),

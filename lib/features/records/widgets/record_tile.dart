@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 
 import '../../../core/database/app_database.dart';
 import '../../../core/domain/enums.dart';
+import '../../../core/theme/app_theme.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../shared/formatting.dart';
 import '../../../shared/l10n_labels.dart';
+import '../../../shared/widgets/paw_card.dart';
 
 IconData recordIcon(RecordType t) => switch (t) {
   RecordType.vaccine => Icons.vaccines_outlined,
@@ -44,7 +46,6 @@ class RecordTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
-    final theme = Theme.of(context);
     final details = [
       showDate
           ? formatDateTime(context, record.occurredAt)
@@ -57,14 +58,17 @@ class RecordTile extends StatelessWidget {
       record.diagnosis,
       record.notes,
     ].where((s) => s.isNotEmpty).join('\n');
+    final p = context.paw;
+    final tone = record.severity == Severity.severe
+        ? Tone(p.dangerSoft, p.danger)
+        : p.recordTone(record.type);
     return ListTile(
-      leading: Icon(
-        recordIcon(record.type),
-        color: record.severity == Severity.severe
-            ? theme.colorScheme.error
-            : null,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
+      leading: ToneIcon(icon: recordIcon(record.type), tone: tone, size: 40),
+      title: Text(
+        recordDisplayTitle(l, record),
+        style: const TextStyle(fontWeight: FontWeight.w600),
       ),
-      title: Text(recordDisplayTitle(l, record)),
       subtitle: Text(extra.isEmpty ? details : '$details\n$extra'),
       isThreeLine: extra.isNotEmpty,
       onTap: onTap,

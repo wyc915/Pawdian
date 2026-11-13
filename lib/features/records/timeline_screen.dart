@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../../core/theme/app_theme.dart';
+import '../../shared/widgets/empty_state.dart';
+import '../../shared/widgets/paw_card.dart';
+
 import 'package:go_router/go_router.dart';
 
 import '../../core/domain/enums.dart';
@@ -38,8 +43,10 @@ class _TimelineScreenState extends ConsumerState<TimelineScreen> {
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
     final unit = ref.watch(effectiveWeightUnitProvider);
-    final records = ref.watch(allRecordsProvider(widget.petId)).value ?? const [];
-    final weights = ref.watch(petWeightsProvider(widget.petId)).value ?? const [];
+    final records =
+        ref.watch(allRecordsProvider(widget.petId)).value ?? const [];
+    final weights =
+        ref.watch(petWeightsProvider(widget.petId)).value ?? const [];
     final items = buildTimeline(
       records: records,
       weights: weights,
@@ -48,23 +55,29 @@ class _TimelineScreenState extends ConsumerState<TimelineScreen> {
       query: _search.text,
     );
 
+    final p = context.paw;
     final rows = <Widget>[];
+    var dayTiles = <Widget>[];
     DateTime? lastDay;
+    void closeDay() {
+      if (dayTiles.isEmpty) return;
+      rows.add(
+        PawCard(
+          padding: const EdgeInsets.symmetric(vertical: 4),
+          child: Column(children: dayTiles),
+        ),
+      );
+      dayTiles = <Widget>[];
+    }
+
     for (final item in items) {
       final day = DateTime(item.at.year, item.at.month, item.at.day);
       if (day != lastDay) {
-        rows.add(
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
-            child: Text(
-              formatDate(context, day),
-              style: Theme.of(context).textTheme.titleSmall,
-            ),
-          ),
-        );
+        closeDay();
+        rows.add(SectionTitle(formatDate(context, day)));
         lastDay = day;
       }
-      rows.add(switch (item) {
+      dayTiles.add(switch (item) {
         RecordItem(:final record) => RecordTile(
           record: record,
           showDate: false,
@@ -72,7 +85,11 @@ class _TimelineScreenState extends ConsumerState<TimelineScreen> {
               context.go(AppRoutes.editRecord(widget.petId, record.id)),
         ),
         WeightItem(:final entry) => ListTile(
-          leading: const Icon(Icons.monitor_weight_outlined),
+          leading: ToneIcon(
+            icon: Icons.monitor_weight_outlined,
+            tone: p.sky,
+            size: 40,
+          ),
           title: Text(l.weightEntryTitle(formatWeight(entry.grams, unit))),
           subtitle: Text(
             [
@@ -89,6 +106,8 @@ class _TimelineScreenState extends ConsumerState<TimelineScreen> {
         ),
       });
     }
+
+    closeDay();
 
     return Scaffold(
       appBar: AppBar(title: Text(l.timelineTitle)),
@@ -118,7 +137,10 @@ class _TimelineScreenState extends ConsumerState<TimelineScreen> {
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               children: [
-                for (final c in <RecordCategory?>[null, ...RecordCategory.values])
+                for (final c in <RecordCategory?>[
+                  null,
+                  ...RecordCategory.values,
+                ])
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 4),
                     child: ChoiceChip(
@@ -133,7 +155,11 @@ class _TimelineScreenState extends ConsumerState<TimelineScreen> {
           ),
           Expanded(
             child: items.isEmpty
-                ? Center(child: Text(l.timelineEmpty))
+                ? EmptyState(
+                    icon: Icons.timeline_outlined,
+                    title: l.timelineEmpty,
+                    body: '',
+                  )
                 : ListView(
                     padding: const EdgeInsets.only(bottom: 96),
                     children: rows,

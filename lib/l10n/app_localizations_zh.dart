@@ -64,6 +64,32 @@ class AppLocalizationsZh extends AppLocalizations {
   String get homeToday => '今天';
 
   @override
+  String get homeGreetingMorning => '早安';
+
+  @override
+  String get homeGreetingAfternoon => '午安';
+
+  @override
+  String get homeGreetingEvening => '晚安';
+
+  @override
+  String homeTasksToday(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '今天有 $count 件事',
+      zero: '今天沒有待辦事項',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get homeUpNext => '下一個提醒';
+
+  @override
+  String get homeTomorrow => '明天';
+
+  @override
   String get homeUpcoming => '未來 7 天';
 
   @override

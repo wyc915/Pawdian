@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../../core/theme/app_theme.dart';
+import '../../shared/widgets/paw_card.dart';
+
 import 'package:go_router/go_router.dart';
 
 import '../../core/database/app_database.dart';
@@ -92,7 +96,6 @@ class PetDetailScreen extends ConsumerWidget {
         padding: const EdgeInsets.only(bottom: 32),
         children: [
           _Header(pet: pet),
-          const Divider(),
           _SectionTitle(
             title: l.sectionReminders,
             trailing: pet.isArchived
@@ -125,12 +128,10 @@ class PetDetailScreen extends ConsumerWidget {
                 onTap: () => context.go(AppRoutes.editReminder(petId, r.id)),
               ),
           if (!pet.isArchived) ...[
-            const Divider(),
+            _SectionTitle(title: l.quickLogTitle),
             QuickLogBar(pets: [pet]),
           ],
-          const Divider(),
           _WeightSummary(petId: petId, enabled: !pet.isArchived),
-          const Divider(),
           _SectionTitle(
             title: l.sectionRecentRecords,
             trailing: Row(
@@ -154,11 +155,19 @@ class PetDetailScreen extends ConsumerWidget {
           if (records.isEmpty)
             _EmptyLine(text: l.noRecords)
           else
-            for (final rec in records)
-              RecordTile(
-                record: rec,
-                onTap: () => context.go(AppRoutes.editRecord(petId, rec.id)),
+            PawCard(
+              padding: const EdgeInsets.symmetric(vertical: 6),
+              child: Column(
+                children: [
+                  for (final rec in records)
+                    RecordTile(
+                      record: rec,
+                      onTap: () =>
+                          context.go(AppRoutes.editRecord(petId, rec.id)),
+                    ),
+                ],
               ),
+            ),
         ],
       ),
     );
@@ -236,23 +245,38 @@ class _WeightSummary extends ConsumerWidget {
         ),
         if (weights.isEmpty)
           _EmptyLine(text: l.weightEmpty)
-        else ...[
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Text(
-              l.weightLatest(formatWeight(weights.last.grams, unit)),
-              style: Theme.of(context).textTheme.titleMedium,
+        else
+          PawCard(
+            onTap: () => context.go(AppRoutes.weight(petId)),
+            padding: const EdgeInsets.fromLTRB(16, 14, 8, 12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    ToneIcon(
+                      icon: Icons.monitor_weight_outlined,
+                      tone: context.paw.sky,
+                      size: 36,
+                    ),
+                    const SizedBox(width: 10),
+                    Text(
+                      l.weightLatest(formatWeight(weights.last.grams, unit)),
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                  ],
+                ),
+                if (recent.length >= 2)
+                  SizedBox(
+                    height: 140,
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(0, 12, 16, 0),
+                      child: WeightChart(entries: recent, unit: unit),
+                    ),
+                  ),
+              ],
             ),
           ),
-          if (recent.length >= 2)
-            SizedBox(
-              height: 140,
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(8, 8, 24, 0),
-                child: WeightChart(entries: recent, unit: unit),
-              ),
-            ),
-        ],
       ],
     );
   }
@@ -266,53 +290,78 @@ class _Header extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
-    final theme = Theme.of(context);
+    final p = context.paw;
+    final tone = p.petTone(pet.id);
     final subtitle = [
       speciesLabel(l, pet.species),
       if (pet.breed.isNotEmpty) pet.breed,
       if (pet.sex != Sex.unknown) sexLabel(l, pet.sex),
       if (pet.neutered == true) l.fieldNeutered,
     ].join(' · ');
-    return Padding(
-      padding: const EdgeInsets.all(16),
+    final info = [
+      _InfoRow(label: l.fieldBirthDate, value: birthdayText(context, pet)),
+      if (pet.microchipId.isNotEmpty)
+        _InfoRow(label: l.fieldMicrochip, value: pet.microchipId),
+      if (pet.color.isNotEmpty) _InfoRow(label: l.fieldColor, value: pet.color),
+      if (pet.vetName.isNotEmpty || pet.vetPhone.isNotEmpty)
+        _InfoRow(
+          label: l.fieldVetName,
+          value: [
+            pet.vetName,
+            pet.vetPhone,
+          ].where((s) => s.isNotEmpty).join('  '),
+        ),
+      if (pet.notes.isNotEmpty) _InfoRow(label: l.fieldNotes, value: pet.notes),
+    ];
+    return PawCard(
+      margin: const EdgeInsets.fromLTRB(16, 4, 16, 6),
+      padding: EdgeInsets.zero,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Row(
-            children: [
-              PetAvatar(pet: pet, radius: 36),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(pet.name, style: theme.textTheme.headlineSmall),
-                    Text(subtitle, style: theme.textTheme.bodyMedium),
-                    if (pet.isArchived)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 4),
-                        child: Chip(label: Text(l.archivedBadge)),
+          Container(
+            color: tone.bg,
+            padding: const EdgeInsets.fromLTRB(16, 18, 16, 18),
+            child: Row(
+              children: [
+                PetAvatar(pet: pet, radius: 36, ring: true),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        pet.name,
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.w700,
+                          color: tone.fg,
+                        ),
                       ),
-                  ],
+                      const SizedBox(height: 2),
+                      Text(
+                        subtitle,
+                        style: TextStyle(color: tone.fg.withValues(alpha: 0.8)),
+                      ),
+                      if (pet.isArchived)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 6),
+                          child: PawPill(
+                            l.archivedBadge,
+                            bg: p.card,
+                            fg: p.subtle,
+                          ),
+                        ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          _InfoRow(label: l.fieldBirthDate, value: birthdayText(context, pet)),
-          if (pet.microchipId.isNotEmpty)
-            _InfoRow(label: l.fieldMicrochip, value: pet.microchipId),
-          if (pet.color.isNotEmpty)
-            _InfoRow(label: l.fieldColor, value: pet.color),
-          if (pet.vetName.isNotEmpty || pet.vetPhone.isNotEmpty)
-            _InfoRow(
-              label: l.fieldVetName,
-              value: [pet.vetName, pet.vetPhone]
-                  .where((s) => s.isNotEmpty)
-                  .join('  '),
+              ],
             ),
-          if (pet.notes.isNotEmpty)
-            _InfoRow(label: l.fieldNotes, value: pet.notes),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+            child: Column(children: info),
+          ),
         ],
       ),
     );
@@ -356,17 +405,7 @@ class _SectionTitle extends StatelessWidget {
   final Widget? trailing;
 
   @override
-  Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.fromLTRB(16, 8, 8, 0),
-    child: Row(
-      children: [
-        Expanded(
-          child: Text(title, style: Theme.of(context).textTheme.titleMedium),
-        ),
-        ?trailing,
-      ],
-    ),
-  );
+  Widget build(BuildContext context) => SectionTitle(title, trailing: trailing);
 }
 
 class _EmptyLine extends StatelessWidget {
@@ -375,11 +414,8 @@ class _EmptyLine extends StatelessWidget {
   final String text;
 
   @override
-  Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-    child: Text(
-      text,
-      style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
-    ),
+  Widget build(BuildContext context) => PawCard(
+    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+    child: Text(text, style: TextStyle(color: context.paw.subtle)),
   );
 }
