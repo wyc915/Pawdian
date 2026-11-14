@@ -80,6 +80,36 @@ void main() {
     });
   });
 
+  // The App Store rejects icons with an alpha channel; after regenerating,
+  // flatten them, e.g. with Pillow:
+  //   python -c "from PIL import Image; import glob; [Image.open(f).convert('RGB').save(f) for f in glob.glob('ios/Runner/Assets.xcassets/AppIcon.appiconset/*.png')]"
+  test('iOS app icons', () async {
+    await TestWidgetsFlutterBinding.ensureInitialized().runAsync(() async {
+      const dir = 'ios/Runner/Assets.xcassets/AppIcon.appiconset';
+      for (final (points, scale) in [
+        (20.0, 1), (20.0, 2), (20.0, 3),
+        (29.0, 1), (29.0, 2), (29.0, 3),
+        (40.0, 1), (40.0, 2), (40.0, 3),
+        (60.0, 2), (60.0, 3),
+        (76.0, 1), (76.0, 2),
+        (83.5, 2),
+        (1024.0, 1),
+      ]) {
+        final size = (points * scale).round();
+        final label = points == points.roundToDouble()
+            ? points.toInt().toString()
+            : points.toString();
+        await _savePng(
+          await _draw(size, size, (c, s) {
+            _background(c, s);
+            paintShieldPaw(c, (Offset.zero & s).deflate(size * 0.08));
+          }),
+          '$dir/Icon-App-${label}x$label@${scale}x.png',
+        );
+      }
+    });
+  });
+
   test('web app icons (home screen, manifest, favicon)', () async {
     await TestWidgetsFlutterBinding.ensureInitialized().runAsync(() async {
       // Full-bleed squares: iOS and Android round the corners themselves.
