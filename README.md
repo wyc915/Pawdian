@@ -1,29 +1,25 @@
-<p align="center">
-  <img src="store/feature-graphic-1024x500.png" alt="Pawdian 毛孩守護" width="100%">
-</p>
+<div align="center">
 
-<h1 align="center">Pawdian 毛孩守護</h1>
+<img src="store/icon-512.png" width="96" alt="Pawdian icon">
 
-<p align="center">
-  <b>疫苗、驅蟲、心絲蟲、餵藥準時提醒，體重與健康紀錄一手掌握。</b><br>
-  不用註冊、沒有廣告，所有資料只存在你的手機上。
-</p>
+# Pawdian 毛孩守護
 
-<p align="center">
-  <img alt="Platform" src="https://img.shields.io/badge/platform-Android-3DDC84?logo=android&logoColor=white">
-  <img alt="Flutter" src="https://img.shields.io/badge/Flutter-3.47-02569B?logo=flutter&logoColor=white">
-  <img alt="Languages" src="https://img.shields.io/badge/語言-繁中%20%7C%20English-2E7D6B">
-  <img alt="Offline" src="https://img.shields.io/badge/資料-僅存手機-8A4B26">
-</p>
+**疫苗、驅蟲、心絲蟲、餵藥準時提醒，體重與健康紀錄一手掌握**
 
-<p align="center">
-  <a href="#-功能介紹">功能介紹</a> ·
-  <a href="#-畫面一覽">畫面一覽</a> ·
-  <a href="#-pawdian-pro">Pawdian Pro</a> ·
-  <a href="#-隱私">隱私</a> ·
-  <a href="#-開發者指南">開發者指南</a> ·
-  <a href="#english">English</a>
-</p>
+不用註冊、沒有廣告，所有資料只存在你的手機上
+
+![Platform](https://img.shields.io/badge/platform-Android-3DDC84?logo=android&logoColor=white)
+![Flutter](https://img.shields.io/badge/Flutter-3.47-02569B?logo=flutter&logoColor=white)
+![Languages](https://img.shields.io/badge/語言-繁中%20%7C%20English-2E7D6B)
+![Offline](https://img.shields.io/badge/資料-僅存手機-8A4B26)
+
+[功能介紹](#-功能介紹) · [畫面一覽](#-畫面一覽) · [Pawdian Pro](#-pawdian-pro) · [隱私](#-隱私) · [開發者指南](#-開發者指南) · [English](#english)
+
+<img src="store/screenshots/zh_1_home.png" width="240" alt="首頁">&nbsp;&nbsp;
+<img src="store/screenshots/zh_2_pet.png" width="240" alt="寵物檔案">&nbsp;&nbsp;
+<img src="store/screenshots/zh_5_report.png" width="240" alt="就醫報告">
+
+</div>
 
 ---
 
