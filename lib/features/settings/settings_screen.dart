@@ -2,6 +2,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../web/web_push.dart';
+
 import '../../core/theme/app_theme.dart';
 import '../../shared/widgets/paw_card.dart';
 
@@ -143,56 +145,63 @@ class SettingsScreen extends ConsumerWidget {
             ],
           ),
           _SectionHeader(l10n.settingsNotifications),
-          _Group(
-            children: [
-              if (status != null) ...[
+          if (ref.watch(notificationGatewayProvider)
+              case final WebPushGateway push)
+            _WebPushGroup(push: push, enabled: status?.enabled ?? false)
+          else
+            _Group(
+              children: [
+                if (status != null) ...[
+                  ListTile(
+                    leading: Icon(
+                      status.enabled
+                          ? Icons.notifications_active_outlined
+                          : Icons.notifications_off_outlined,
+                    ),
+                    title: Text(
+                      status.enabled ? l10n.notifAllowed : l10n.notifBlocked,
+                    ),
+                    onTap: status.enabled
+                        ? null
+                        : () => requestNotificationPermission(ref),
+                  ),
+                  ListTile(
+                    leading: Icon(
+                      status.exact
+                          ? Icons.alarm_on_outlined
+                          : Icons.alarm_off_outlined,
+                    ),
+                    title: Text(
+                      status.exact ? l10n.exactAllowed : l10n.exactBlocked,
+                    ),
+                    onTap: status.exact
+                        ? null
+                        : () async {
+                            await ref
+                                .read(notificationGatewayProvider)
+                                .requestExact();
+                            ref.invalidate(notificationStatusProvider);
+                          },
+                  ),
+                ],
                 ListTile(
-                  leading: Icon(
-                    status.enabled
-                        ? Icons.notifications_active_outlined
-                        : Icons.notifications_off_outlined,
-                  ),
-                  title: Text(
-                    status.enabled ? l10n.notifAllowed : l10n.notifBlocked,
-                  ),
-                  onTap: status.enabled
-                      ? null
-                      : () => requestNotificationPermission(ref),
-                ),
-                ListTile(
-                  leading: Icon(
-                    status.exact
-                        ? Icons.alarm_on_outlined
-                        : Icons.alarm_off_outlined,
-                  ),
-                  title: Text(
-                    status.exact ? l10n.exactAllowed : l10n.exactBlocked,
-                  ),
-                  onTap: status.exact
-                      ? null
-                      : () async {
-                          await ref
-                              .read(notificationGatewayProvider)
-                              .requestExact();
-                          ref.invalidate(notificationStatusProvider);
-                        },
+                  leading: const Icon(Icons.help_outline),
+                  title: Text(l10n.reminderHelpTitle),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => context.go(AppRoutes.reminderHelp),
                 ),
               ],
-              ListTile(
-                leading: const Icon(Icons.help_outline),
-                title: Text(l10n.reminderHelpTitle),
-                trailing: const Icon(Icons.chevron_right),
-                onTap: () => context.go(AppRoutes.reminderHelp),
-              ),
-            ],
-          ),
+            ),
           _SectionHeader(l10n.settingsData),
           _Group(
             children: [
               ListTile(
                 key: const Key('settings.backup'),
-                leading: const Icon(Icons.backup_outlined),
-                title: Text(l10n.backupTitle),
+                leading: Icon(
+                  kIsWeb ? Icons.computer_outlined : Icons.backup_outlined,
+                ),
+                title: Text(kIsWeb ? l10n.webDataTitle : l10n.backupTitle),
+                subtitle: kIsWeb ? Text(l10n.webDataBody) : null,
                 trailing: const Icon(Icons.chevron_right),
                 onTap: () => context.go(AppRoutes.backup),
               ),
@@ -383,6 +392,66 @@ class _SectionHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => SectionTitle(text);
+}
+
+/// Web edition: reminders arrive by Web Push from the home server.
+class _WebPushGroup extends ConsumerWidget {
+  const _WebPushGroup({required this.push, required this.enabled});
+
+  final WebPushGateway push;
+  final bool enabled;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    final p = context.paw;
+    if (push.needsInstall || !push.supported) {
+      return _Group(
+        children: [
+          ListTile(
+            leading: Icon(Icons.add_to_home_screen, color: p.warning),
+            title: Text(
+              push.needsInstall
+                  ? l10n.webPushInstallHint
+                  : l10n.webPushUnsupported,
+            ),
+          ),
+        ],
+      );
+    }
+    return _Group(
+      children: [
+        ListTile(
+          key: const Key('settings.webPush'),
+          leading: Icon(
+            enabled
+                ? Icons.notifications_active_outlined
+                : Icons.notifications_off_outlined,
+          ),
+          title: Text(enabled ? l10n.notifAllowed : l10n.notifBlocked),
+          onTap: enabled ? null : () => requestNotificationPermission(ref),
+        ),
+        ListTile(
+          leading: const Icon(Icons.send_outlined),
+          title: Text(l10n.webPushTest),
+          onTap: () async {
+            final messenger = ScaffoldMessenger.of(context);
+            var sent = 0;
+            try {
+              sent = await push.sendTest(l10n.appTitle, l10n.webPushTestSent);
+            } catch (_) {}
+            messenger.showSnackBar(
+              SnackBar(
+                content: Text(
+                  sent > 0 ? l10n.webPushTestSent : l10n.webPushTestFailed,
+                ),
+              ),
+            );
+          },
+        ),
+      ],
+    );
+  }
 }
 
 /// A card holding a group of settings rows.

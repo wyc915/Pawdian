@@ -21,18 +21,23 @@ class ServerApi {
 
   Map<String, String> get _headers => {'X-Pawdian-Token': passcode};
 
-  Uri _api(String path, [Map<String, String>? query]) => base.replace(
+  // Built from parts: Uri.replace keeps a fragment, and WebSocket URLs
+  // must not have one.
+  Uri _api(String path, [Map<String, String>? query]) => Uri(
+    scheme: base.scheme,
+    host: base.host,
+    port: base.port,
     path: '/api/$path',
     queryParameters: query,
-    fragment: '',
   );
 
   /// WebSocket URL of the shared database.
-  Uri get databaseSocket => base.replace(
+  Uri get databaseSocket => Uri(
     scheme: base.scheme == 'https' ? 'wss' : 'ws',
+    host: base.host,
+    port: base.port,
     path: '/api/db',
     queryParameters: {'token': passcode},
-    fragment: '',
   );
 
   /// Whether the server is reachable and accepts the passcode.

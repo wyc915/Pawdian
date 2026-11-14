@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -124,6 +125,7 @@ class _ProScreenState extends ConsumerState<ProScreen> {
               child: ListTile(
                 leading: const Icon(Icons.verified),
                 title: Text(l.proActive),
+                subtitle: kIsWeb ? Text(l.webProIncluded) : null,
               ),
             )
           else
@@ -162,13 +164,14 @@ class _ProScreenState extends ConsumerState<ProScreen> {
                     ),
             ),
           const SizedBox(height: 8),
-          Center(
-            child: TextButton(
-              key: const Key('pro.restore'),
-              onPressed: _busy ? null : _restore,
-              child: Text(l.proRestore),
+          if (!kIsWeb)
+            Center(
+              child: TextButton(
+                key: const Key('pro.restore'),
+                onPressed: _busy ? null : _restore,
+                child: Text(l.proRestore),
+              ),
             ),
-          ),
           const SizedBox(height: 8),
           Text(l.proTerms, style: theme.textTheme.bodySmall),
         ],

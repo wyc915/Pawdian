@@ -31,7 +31,7 @@ const kPasscodeKey = 'server_passcode';
 
 /// Origin the page was loaded from (the home server).
 Uri get serverOrigin =>
-    Uri.base.replace(path: '/', query: null, fragment: null);
+    Uri(scheme: Uri.base.scheme, host: Uri.base.host, port: Uri.base.port);
 
 /// Starts the web edition: data and reminders live on the home server.
 Future<void> runWebEdition(SharedPreferences prefs) async {
@@ -51,8 +51,9 @@ Future<void> runWebEdition(SharedPreferences prefs) async {
       socket.cast<String>().transform(jsonDocument),
       serialize: true,
     );
-  } catch (_) {
-    runApp(_PasscodeApp(prefs: prefs, failed: true));
+  } catch (e) {
+    debugPrint('Connecting to the database failed: $e');
+    runApp(_PasscodeApp(prefs: prefs, failed: true, detail: '$e'));
     return;
   }
 
@@ -79,11 +80,11 @@ Future<void> runWebEdition(SharedPreferences prefs) async {
 
   // iOS suspends the page in the background and drops the socket; reload
   // (which reconnects) as soon as the user comes back.
-  unawaited(
-    socket.sink.done.then((_) => whenVisible(reloadPage)),
-  );
+  unawaited(socket.sink.done.then((_) => whenVisible(reloadPage)));
 
-  final launch = await container.read(notificationGatewayProvider).launchResponse();
+  final launch = await container
+      .read(notificationGatewayProvider)
+      .launchResponse();
   runApp(
     UncontrolledProviderScope(container: container, child: const PawdianApp()),
   );
@@ -117,10 +118,13 @@ class _NoHomeWidget implements HomeWidgetGateway {
 
 /// Asks for the server passcode, checks it and reloads the app.
 class _PasscodeApp extends StatelessWidget {
-  const _PasscodeApp({required this.prefs, this.failed = false});
+  const _PasscodeApp({required this.prefs, this.failed = false, this.detail});
 
   final SharedPreferences prefs;
   final bool failed;
+
+  /// Technical reason, shown small to help when the connection fails.
+  final String? detail;
 
   @override
   Widget build(BuildContext context) => MaterialApp(
@@ -129,18 +133,18 @@ class _PasscodeApp extends StatelessWidget {
     darkTheme: buildDarkTheme(),
     supportedLocales: kSupportedLocales,
     localizationsDelegates: AppLocalizations.localizationsDelegates,
-    localeListResolutionCallback: (locales, supported) => resolveAppLocale(
-      locales?.isNotEmpty == true ? locales!.first : null,
-    ),
-    home: _PasscodePage(prefs: prefs, failed: failed),
+    localeListResolutionCallback: (locales, supported) =>
+        resolveAppLocale(locales?.isNotEmpty == true ? locales!.first : null),
+    home: _PasscodePage(prefs: prefs, failed: failed, detail: detail),
   );
 }
 
 class _PasscodePage extends StatefulWidget {
-  const _PasscodePage({required this.prefs, required this.failed});
+  const _PasscodePage({required this.prefs, required this.failed, this.detail});
 
   final SharedPreferences prefs;
   final bool failed;
+  final String? detail;
 
   @override
   State<_PasscodePage> createState() => _PasscodePageState();
@@ -224,6 +228,14 @@ class _PasscodePageState extends State<_PasscodePage> {
                       errorText: _error ? l.webPasscodeWrong : null,
                     ),
                   ),
+                  if (widget.detail != null && _error)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8),
+                      child: Text(
+                        widget.detail!,
+                        style: TextStyle(color: p.subtle, fontSize: 12),
+                      ),
+                    ),
                   const SizedBox(height: 16),
                   FilledButton(
                     onPressed: _busy ? null : _connect,

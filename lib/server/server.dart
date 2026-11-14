@@ -319,11 +319,24 @@ class PawdianServer {
     }
     res.headers.contentType = _contentType(file.path);
     final name = rel.split('/').last;
+    // Always revalidate (cheap 304s) so a new build reaches the phone right
+    // after `flutter build web`; only CanvasKit, which never changes within
+    // a Flutter version, is cached for long.
     res.headers.set(
       'Cache-Control',
-      _noCache.contains(name) ? 'no-cache' : 'public, max-age=3600',
+      rel.startsWith('canvaskit/') && !_noCache.contains(name)
+          ? 'public, max-age=86400'
+          : 'no-cache',
     );
     if (name == 'push_sw.js') res.headers.set('Service-Worker-Allowed', '/');
+    final modified = file.lastModifiedSync().toUtc();
+    res.headers.set(HttpHeaders.lastModifiedHeader, HttpDate.format(modified));
+    final since = req.headers.ifModifiedSince;
+    if (since != null &&
+        !modified.isAfter(since.add(const Duration(seconds: 1)))) {
+      res.statusCode = HttpStatus.notModified;
+      return res.close();
+    }
     if (req.method == 'HEAD') return res.close();
     await res.addStream(file.openRead());
     return res.close();

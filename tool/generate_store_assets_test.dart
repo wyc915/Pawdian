@@ -80,6 +80,28 @@ void main() {
     });
   });
 
+  test('web app icons (home screen, manifest, favicon)', () async {
+    await TestWidgetsFlutterBinding.ensureInitialized().runAsync(() async {
+      // Full-bleed squares: iOS and Android round the corners themselves.
+      for (final (size, path, inset) in [
+        (192, 'web/icons/Icon-192.png', 0.08),
+        (512, 'web/icons/Icon-512.png', 0.08),
+        (192, 'web/icons/Icon-maskable-192.png', 0.18),
+        (512, 'web/icons/Icon-maskable-512.png', 0.18),
+        (180, 'web/icons/apple-touch-icon.png', 0.08),
+        (32, 'web/favicon.png', 0.04),
+      ]) {
+        await _savePng(
+          await _draw(size, size, (c, s) {
+            _background(c, s);
+            paintShieldPaw(c, (Offset.zero & s).deflate(size * inset));
+          }),
+          path,
+        );
+      }
+    });
+  });
+
   test('Play Store icon and feature graphic', () async {
     await TestWidgetsFlutterBinding.ensureInitialized().runAsync(() async {
       await _savePng(

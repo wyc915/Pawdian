@@ -1,8 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path/path.dart' as p;
@@ -137,12 +139,17 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
         l: l,
         unit: ref.read(effectiveWeightUnitProvider),
       );
-      final service = await ref.read(backupServiceProvider.future);
-      final file = File(p.join(service.tempDir.path, 'Pawdian-export.csv'));
-      await file.writeAsBytes(utf8.encode(csv));
+      // From memory, so it also works in the browser (web edition).
       await SharePlus.instance.share(
         ShareParams(
-          files: [XFile(file.path, mimeType: 'text/csv')],
+          files: [
+            XFile.fromData(
+              Uint8List.fromList(utf8.encode(csv)),
+              name: 'Pawdian-export.csv',
+              mimeType: 'text/csv',
+            ),
+          ],
+          fileNameOverrides: const ['Pawdian-export.csv'],
           subject: 'Pawdian-export.csv',
         ),
       );
@@ -156,48 +163,57 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
     final last = ref.watch(lastBackupProvider);
     final stale = last == null || DateTime.now().difference(last).inDays > 30;
     return Scaffold(
-      appBar: AppBar(title: Text(l.backupTitle)),
+      appBar: AppBar(title: Text(kIsWeb ? l.webDataTitle : l.backupTitle)),
       body: AbsorbPointer(
         absorbing: _busy,
         child: ListView(
           padding: const EdgeInsets.symmetric(vertical: 8),
           children: [
             if (_busy) const LinearProgressIndicator(),
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: Text(l.backupIntro),
-            ),
-            ListTile(
-              leading: Icon(
-                stale ? Icons.warning_amber : Icons.check_circle_outline,
-                color: stale ? theme.colorScheme.error : null,
+            // Web edition: the home server keeps the data and backs it up.
+            if (kIsWeb)
+              ListTile(
+                leading: const Icon(Icons.computer_outlined),
+                title: Text(l.webDataTitle),
+                subtitle: Text(l.webDataBody),
+              )
+            else ...[
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Text(l.backupIntro),
               ),
-              title: Text(
-                last == null
-                    ? l.backupNever
-                    : l.backupLast(formatDateTime(context, last)),
+              ListTile(
+                leading: Icon(
+                  stale ? Icons.warning_amber : Icons.check_circle_outline,
+                  color: stale ? theme.colorScheme.error : null,
+                ),
+                title: Text(
+                  last == null
+                      ? l.backupNever
+                      : l.backupLast(formatDateTime(context, last)),
+                ),
+                subtitle: stale && last != null ? Text(l.backupStale) : null,
               ),
-              subtitle: stale && last != null ? Text(l.backupStale) : null,
-            ),
-            const Divider(),
-            ListTile(
-              key: const Key('backup.share'),
-              leading: const Icon(Icons.share_outlined),
-              title: Text(l.backupCreateShare),
-              onTap: _createAndShare,
-            ),
-            ListTile(
-              key: const Key('backup.save'),
-              leading: const Icon(Icons.save_alt),
-              title: Text(l.backupCreateSave),
-              onTap: _createAndSave,
-            ),
-            ListTile(
-              key: const Key('backup.restore'),
-              leading: const Icon(Icons.restore),
-              title: Text(l.backupRestore),
-              onTap: _restore,
-            ),
+              const Divider(),
+              ListTile(
+                key: const Key('backup.share'),
+                leading: const Icon(Icons.share_outlined),
+                title: Text(l.backupCreateShare),
+                onTap: _createAndShare,
+              ),
+              ListTile(
+                key: const Key('backup.save'),
+                leading: const Icon(Icons.save_alt),
+                title: Text(l.backupCreateSave),
+                onTap: _createAndSave,
+              ),
+              ListTile(
+                key: const Key('backup.restore'),
+                leading: const Icon(Icons.restore),
+                title: Text(l.backupRestore),
+                onTap: _restore,
+              ),
+            ],
             const Divider(),
             ListTile(
               key: const Key('backup.csv'),

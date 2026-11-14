@@ -21,6 +21,9 @@
 
 </div>
 
+> [!NOTE]
+> 這是**網頁伺服器版**分支（`feature/web-server`）：在 iPhone 的 Safari 使用、資料存在家裡的電腦、透過 Tailscale 連線，提醒用 Web Push 推送。設定方式見 **[docs/WEB_SERVER.md](docs/WEB_SERVER.md)**。Android 離線版請看 [`main` 分支](https://github.com/wyc915/Pawdian/tree/main)。
+
 ---
 
 ## 🐾 為什麼是 Pawdian

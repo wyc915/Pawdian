@@ -164,14 +164,18 @@ class _TemplatePickerState extends ConsumerState<_TemplatePicker> {
                     onChanged: (v) => setState(() => c.selected = v ?? false),
                     secondary: Icon(reminderIcon(c.item.type)),
                     title: Text(c.item.title(l)),
-                    subtitle: Row(
+                    // Wraps on narrow phones instead of squeezing the
+                    // repeat label into one character per line.
+                    subtitle: Wrap(
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      spacing: 4,
                       children: [
-                        Expanded(
-                          child: Text(
-                            repeatLabel(l, c.item.unit, c.item.interval),
-                          ),
-                        ),
+                        Text(repeatLabel(l, c.item.unit, c.item.interval)),
                         TextButton.icon(
+                          style: TextButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(horizontal: 4),
+                            visualDensity: VisualDensity.compact,
+                          ),
                           onPressed: c.selected ? () => _pickDate(c) : null,
                           icon: const Icon(Icons.calendar_today, size: 16),
                           label: Text(
