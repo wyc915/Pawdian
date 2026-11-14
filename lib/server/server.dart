@@ -303,6 +303,12 @@ class PawdianServer {
       return res.close();
     }
     var rel = Uri.decodeComponent(req.uri.path).replaceFirst(RegExp(r'^/+'), '');
+    // Flutter's deprecated service worker would fight with push_sw.js
+    // (unregister + reload loop); never hand it out.
+    if (rel == 'flutter_service_worker.js') {
+      res.statusCode = HttpStatus.notFound;
+      return res.close();
+    }
     if (rel.isEmpty || rel.split('/').any((s) => s == '..' || s.startsWith('.'))) {
       rel = 'index.html';
     }

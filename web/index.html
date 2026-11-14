@@ -27,8 +27,17 @@
 <body>
   <script>
     // Service worker for Web Push (reminders from the home server).
+    // Older builds installed Flutter's own worker on the same scope; remove
+    // it before registering ours so it can't unregister and reload the page.
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('push_sw.js', { scope: './' });
+      navigator.serviceWorker.getRegistrations()
+        .then((regs) => Promise.all(regs.map((r) => {
+          const w = r.active || r.waiting || r.installing;
+          return w && w.scriptURL.includes('flutter_service_worker')
+            ? r.unregister() : null;
+        })))
+        .catch(() => {})
+        .then(() => navigator.serviceWorker.register('push_sw.js', { scope: './' }));
     }
   </script>
   <script src="flutter_bootstrap.js" async></script>
