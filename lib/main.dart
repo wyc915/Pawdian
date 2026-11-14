@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -10,12 +11,15 @@ import 'core/notifications/notification_gateway.dart';
 import 'core/notifications/notification_sync.dart';
 import 'core/settings/app_language.dart';
 import 'core/storage/file_cleanup.dart';
+import 'web/web_main.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // Date formats are also used outside widgets (notifications, home widget).
   await initializeDateFormatting();
   final prefs = await SharedPreferences.getInstance();
+  if (kIsWeb) return runWebEdition(prefs);
+
   final container = ProviderContainer(
     overrides: [sharedPreferencesProvider.overrideWithValue(prefs)],
   );

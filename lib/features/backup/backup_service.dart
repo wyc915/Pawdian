@@ -5,11 +5,13 @@ import 'package:archive/archive_io.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
-import 'package:sqlite3/sqlite3.dart';
+import 'package:sqlite3/common.dart';
 
 import '../../core/database/app_database.dart';
 import '../../core/settings/app_language.dart';
 import '../../core/storage/photo_store.dart';
+import 'sqlite_open_stub.dart'
+    if (dart.library.ffi) 'sqlite_open_io.dart';
 
 /// Folders inside the documents directory that hold user files.
 const kPhotoDirName = 'pet_photos';
@@ -224,9 +226,9 @@ class BackupService {
   /// that this version can open; a bad file would otherwise crash the app
   /// on every start after restoring.
   static void _checkDatabase(File file, {required int currentSchema}) {
-    final Database db;
+    final CommonDatabase db;
     try {
-      db = sqlite3.open(file.path, mode: OpenMode.readOnly);
+      db = openSqliteReadOnly(file.path);
     } catch (_) {
       throw const BackupException(BackupFailure.invalid);
     }

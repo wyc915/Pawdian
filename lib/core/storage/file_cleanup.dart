@@ -82,8 +82,8 @@ class FileCleanup {
 Future<void> cleanUpUnusedFiles(Ref ref) async {
   try {
     await FileCleanup(ref.read(appDatabaseProvider)).run(
-      photos: await ref.read(photoStoreProvider.future),
-      attachments: await ref.read(attachmentStoreProvider.future),
+      photos: await ref.read(photoStoreProvider.future) as PhotoStore,
+      attachments: await ref.read(attachmentStoreProvider.future) as PhotoStore,
     );
   } catch (e) {
     debugPrint('File cleanup failed: $e');

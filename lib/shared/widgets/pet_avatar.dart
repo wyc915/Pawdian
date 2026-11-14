@@ -33,8 +33,7 @@ class PetAvatar extends ConsumerWidget {
     ImageProvider? image;
     if (photo != null) {
       final store = ref.watch(photoStoreProvider).value;
-      final file = store?.fileFor(photo);
-      if (file != null) image = FileImage(file);
+      image = store?.imageFor(photo);
     }
     final avatar = CircleAvatar(
       radius: radius,

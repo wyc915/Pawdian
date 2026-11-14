@@ -242,6 +242,90 @@ abstract class AppLocalizations {
   /// **'Tomorrow'**
   String get homeTomorrow;
 
+  /// No description provided for @webPasscodeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect to your computer'**
+  String get webPasscodeTitle;
+
+  /// No description provided for @webPasscodeBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the passcode shown by the Pawdian server on your computer. You only need to do this once on each device.'**
+  String get webPasscodeBody;
+
+  /// No description provided for @webPasscodeField.
+  ///
+  /// In en, this message translates to:
+  /// **'Passcode'**
+  String get webPasscodeField;
+
+  /// No description provided for @webPasscodeConnect.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect'**
+  String get webPasscodeConnect;
+
+  /// No description provided for @webPasscodeWrong.
+  ///
+  /// In en, this message translates to:
+  /// **'Wrong passcode, or the computer can\'t be reached.'**
+  String get webPasscodeWrong;
+
+  /// No description provided for @webReconnecting.
+  ///
+  /// In en, this message translates to:
+  /// **'Connection to your computer was lost. Reconnecting…'**
+  String get webReconnecting;
+
+  /// No description provided for @webPushInstallHint.
+  ///
+  /// In en, this message translates to:
+  /// **'To get reminders on iPhone, tap Share › Add to Home Screen in Safari, then open Pawdian from the Home Screen.'**
+  String get webPushInstallHint;
+
+  /// No description provided for @webPushUnsupported.
+  ///
+  /// In en, this message translates to:
+  /// **'This browser can\'t receive reminders.'**
+  String get webPushUnsupported;
+
+  /// No description provided for @webPushTest.
+  ///
+  /// In en, this message translates to:
+  /// **'Send a test notification'**
+  String get webPushTest;
+
+  /// No description provided for @webPushTestSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Test notification sent'**
+  String get webPushTestSent;
+
+  /// No description provided for @webPushTestFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'No device received it. Turn on notifications first.'**
+  String get webPushTestFailed;
+
+  /// No description provided for @webDataTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your data is on your computer'**
+  String get webDataTitle;
+
+  /// No description provided for @webDataBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved in the PawdianData folder on your computer, with a daily backup kept for 30 days.'**
+  String get webDataBody;
+
+  /// No description provided for @webProIncluded.
+  ///
+  /// In en, this message translates to:
+  /// **'Every Pro feature is included in the home server edition.'**
+  String get webProIncluded;
+
   /// No description provided for @homeUpcoming.
   ///
   /// In en, this message translates to:

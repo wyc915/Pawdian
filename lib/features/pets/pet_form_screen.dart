@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:drift/drift.dart' show Value;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -294,7 +292,7 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
     if (_pickedPath != null) {
       avatar = CircleAvatar(
         radius: 48,
-        foregroundImage: FileImage(File(_pickedPath!)),
+        foregroundImage: pickedImage(_pickedPath!),
       );
     } else if (_original != null && !_removePhoto) {
       avatar = PetAvatar(pet: _original!, radius: 48);

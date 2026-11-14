@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -131,9 +129,9 @@ class _RecordFormScreenState extends ConsumerState<RecordFormScreen> {
           children: [
             if (store != null)
               for (final a in _existing)
-                if (store.fileFor(a.fileName) case final file?)
+                if (store.imageFor(a.fileName) case final image?)
                   thumb(
-                    FileImage(file),
+                    image,
                     () => setState(() {
                       _existing = [..._existing]..remove(a);
                       _removed.add(a);
@@ -141,7 +139,7 @@ class _RecordFormScreenState extends ConsumerState<RecordFormScreen> {
                   ),
             for (final path in _pickedPaths)
               thumb(
-                FileImage(File(path)),
+                pickedImage(path),
                 () => setState(() => _pickedPaths.remove(path)),
               ),
           ],

@@ -167,14 +167,16 @@ class ProEntitlement extends Notifier<bool> {
   bool get _owned =>
       ref.read(sharedPreferencesProvider).getBool(_ownedKey) ?? false;
 
+  /// The home server edition (web) is the owner's own copy: everything is
+  /// included.
   @override
-  bool build() => _debug || _owned;
+  bool build() => kIsWeb || _debug || _owned;
 
   /// Called with the store's answer; only a definite answer should be passed
   /// (do not call when the store could not be reached).
   Future<void> setOwned(bool owned) async {
     await ref.read(sharedPreferencesProvider).setBool(_ownedKey, owned);
-    state = _debug || owned;
+    state = kIsWeb || _debug || owned;
   }
 
   Future<void> setDebugUnlocked(bool value) async {

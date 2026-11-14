@@ -90,6 +90,49 @@ class AppLocalizationsZh extends AppLocalizations {
   String get homeTomorrow => '明天';
 
   @override
+  String get webPasscodeTitle => '連線到家裡的電腦';
+
+  @override
+  String get webPasscodeBody => '輸入電腦上 Pawdian 伺服器顯示的通行碼。每台裝置只需要輸入一次。';
+
+  @override
+  String get webPasscodeField => '通行碼';
+
+  @override
+  String get webPasscodeConnect => '連線';
+
+  @override
+  String get webPasscodeWrong => '通行碼不正確，或連不到電腦。';
+
+  @override
+  String get webReconnecting => '與電腦的連線中斷，正在重新連線…';
+
+  @override
+  String get webPushInstallHint =>
+      'iPhone 要收到提醒：請在 Safari 點「分享 › 加入主畫面」，之後從主畫面的 Pawdian 開啟。';
+
+  @override
+  String get webPushUnsupported => '這個瀏覽器無法接收提醒通知。';
+
+  @override
+  String get webPushTest => '傳送測試通知';
+
+  @override
+  String get webPushTestSent => '已送出測試通知';
+
+  @override
+  String get webPushTestFailed => '沒有裝置收到，請先開啟通知。';
+
+  @override
+  String get webDataTitle => '資料存在家裡的電腦';
+
+  @override
+  String get webDataBody => '存放在電腦的 PawdianData 資料夾，每天自動備份，保留 30 天。';
+
+  @override
+  String get webProIncluded => '家用伺服器版已包含全部 Pro 功能。';
+
+  @override
   String get homeUpcoming => '未來 7 天';
 
   @override

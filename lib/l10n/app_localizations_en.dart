@@ -92,6 +92,55 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeTomorrow => 'Tomorrow';
 
   @override
+  String get webPasscodeTitle => 'Connect to your computer';
+
+  @override
+  String get webPasscodeBody =>
+      'Enter the passcode shown by the Pawdian server on your computer. You only need to do this once on each device.';
+
+  @override
+  String get webPasscodeField => 'Passcode';
+
+  @override
+  String get webPasscodeConnect => 'Connect';
+
+  @override
+  String get webPasscodeWrong =>
+      'Wrong passcode, or the computer can\'t be reached.';
+
+  @override
+  String get webReconnecting =>
+      'Connection to your computer was lost. Reconnecting…';
+
+  @override
+  String get webPushInstallHint =>
+      'To get reminders on iPhone, tap Share › Add to Home Screen in Safari, then open Pawdian from the Home Screen.';
+
+  @override
+  String get webPushUnsupported => 'This browser can\'t receive reminders.';
+
+  @override
+  String get webPushTest => 'Send a test notification';
+
+  @override
+  String get webPushTestSent => 'Test notification sent';
+
+  @override
+  String get webPushTestFailed =>
+      'No device received it. Turn on notifications first.';
+
+  @override
+  String get webDataTitle => 'Your data is on your computer';
+
+  @override
+  String get webDataBody =>
+      'Saved in the PawdianData folder on your computer, with a daily backup kept for 30 days.';
+
+  @override
+  String get webProIncluded =>
+      'Every Pro feature is included in the home server edition.';
+
+  @override
   String get homeUpcoming => 'Next 7 days';
 
   @override

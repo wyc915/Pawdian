@@ -1,13 +1,31 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
 
-/// Stores pet photos as files in the app's private documents directory; the
-/// database keeps only the file name.
-class PhotoStore {
+/// Where pet photos and attachments live. The database keeps only the file
+/// name; the phone app stores files locally, the web edition on the home
+/// server.
+abstract interface class ImageStore {
+  /// Image for a stored [name], or null if the name is not safe.
+  ImageProvider? imageFor(String name);
+
+  /// Copies a picked file (path or browser blob URL) in; returns its name.
+  Future<String> importFile(String sourcePath);
+
+  Future<void> delete(String name);
+}
+
+/// Preview of a file the user just picked, before it is saved.
+ImageProvider pickedImage(String path) =>
+    kIsWeb ? NetworkImage(path) : FileImage(File(path));
+
+/// Stores pet photos as files in the app's private documents directory.
+class PhotoStore implements ImageStore {
   PhotoStore(this.directory);
 
   final Directory directory;
@@ -25,6 +43,13 @@ class PhotoStore {
   File? fileFor(String name) =>
       isSafeName(name) ? File(p.join(directory.path, name)) : null;
 
+  @override
+  ImageProvider? imageFor(String name) {
+    final f = fileFor(name);
+    return f == null ? null : FileImage(f);
+  }
+
+  @override
   Future<String> importFile(String sourcePath) async {
     var ext = p.extension(sourcePath).toLowerCase();
     if (!RegExp(r'^\.[a-z0-9]{1,5}$').hasMatch(ext)) ext = '.jpg';
@@ -33,6 +58,7 @@ class PhotoStore {
     return name;
   }
 
+  @override
   Future<void> delete(String name) async {
     final f = fileFor(name);
     if (f != null && await f.exists()) await f.delete();
@@ -48,11 +74,11 @@ Future<PhotoStore> _storeIn(String folder) async {
 
 /// Pet profile photos. Folder name must match backup_service.dart and the
 /// Android backup rules.
-final photoStoreProvider = FutureProvider<PhotoStore>(
+final photoStoreProvider = FutureProvider<ImageStore>(
   (ref) => _storeIn('pet_photos'),
 );
 
 /// Photos attached to care records.
-final attachmentStoreProvider = FutureProvider<PhotoStore>(
+final attachmentStoreProvider = FutureProvider<ImageStore>(
   (ref) => _storeIn('attachments'),
 );
